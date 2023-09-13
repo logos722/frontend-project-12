@@ -23,7 +23,11 @@ rules:
   import/no-unresolved: 0
   react/prop-types: 0
   no-console: 0
+  arrow-body-style: 0
+  react/jsx-one-expression-per-line: 0
   react/react-in-jsx-scope: 0
+  functional/no-return-void: 'off'
+  functional/no-expression-statements: 'off'
   functional/no-conditional-statement: 0
   functional/no-expression-statement: 0
   functional/immutable-data: 0
