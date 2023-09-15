@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import React from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import avatar from '../assets/image/avatar.jpg';
+import LoginSchema from '../helpers/validator.js';
 
 const Login = () => {
   const formik = useFormik({
@@ -11,6 +13,7 @@ const Login = () => {
       username: '',
       password: '',
     },
+    validationSchema: LoginSchema,
     onSubmit: (values) => {
       alert(JSON.stringify(values, null, 2));
     },
@@ -25,6 +28,7 @@ const Login = () => {
               <div className="card-body row p-5">
                 <div className="col-12 col-md-6 d-flex align-items-center justify-content-center">
                   <img
+                    src={avatar}
                     className="rounded-circle"
                     alt="login header"
                   />
@@ -41,7 +45,11 @@ const Login = () => {
                       autoComplete="username"
                       required
                       placeholder="Ваш ник"
+                      isInvalid={formik.touched.username && formik.errors.username}
                     />
+                    <Form.Control.Feedback type="invalid" tooltip>
+                      {formik.touched.username && formik.errors.username}
+                    </Form.Control.Feedback>
                     <label htmlFor="username">Ваш ник</label>
                   </Form.Group>
                   <Form.Group className="form-floating mb-4">
@@ -54,7 +62,11 @@ const Login = () => {
                       autoComplete="current-password"
                       required
                       placeholder="Ваш пароль"
+                      isInvalid={formik.touched.password && formik.errors.password}
                     />
+                    <Form.Control.Feedback type="invalid" tooltip>
+                      {formik.touched.password && formik.errors.password}
+                    </Form.Control.Feedback>
                     <Form.Label htmlFor="password">Ваш пароль</Form.Label>
                   </Form.Group>
                   <Button type="submit" variant="outline-primary" className="w-100 mb-3">Войти</Button>
