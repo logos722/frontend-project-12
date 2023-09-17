@@ -1,21 +1,30 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { useFormik } from 'formik';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import React from 'react';
 import Form from 'react-bootstrap/Form';
+import axios from 'axios';
 import Button from 'react-bootstrap/Button';
 import avatar from '../assets/image/avatar.jpg';
 import LoginSchema from '../helpers/validator.js';
 
 const Login = () => {
+  const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
       username: '',
       password: '',
     },
     validationSchema: LoginSchema,
-    onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+    onSubmit: async (values) => {
+      const formDate = JSON.stringify(values, null, 2);
+      console.log(formDate);
+      const serverData = await axios.post('/api/v1/login', { username: formDate.username, password: formDate.password }).then((response) => {
+        return response.data;
+      });
+      const { token } = serverData;
+      localStorage.setItem('token', token);
+      navigate('/', { replace: false });
     },
   });
 
