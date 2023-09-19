@@ -5,6 +5,7 @@ import React from 'react';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 import Button from 'react-bootstrap/Button';
+import Alert from 'react-bootstrap/Alert';
 import avatar from '../assets/image/avatar.jpg';
 import LoginSchema from '../helpers/validator.js';
 
@@ -17,14 +18,21 @@ const Login = () => {
     },
     validationSchema: LoginSchema,
     onSubmit: async (values) => {
-      const formDate = JSON.stringify(values, null, 2);
-      console.log(formDate);
-      const serverData = await axios.post('/api/v1/login', { username: formDate.username, password: formDate.password }).then((response) => {
-        return response.data;
-      });
-      const { token } = serverData;
-      localStorage.setItem('token', token);
-      navigate('/', { replace: false });
+      try {
+        const formDate = JSON.stringify(values, null, 2);
+        console.log(formDate);
+        const serverData = await axios.post('/api/v1/login', { username: formDate.username, password: formDate.password }).then((response) => {
+          return response.data;
+        });
+        const { token } = serverData;
+        localStorage.setItem('token', token);
+        navigate('/', { replace: false });
+      } catch (e) {
+        console.log(e);
+        if (e.code === 'ERR_BAD_REQUEST') {
+          formik.setStatus({ auth: 'Вы не зарегистрированы, пожалуйста, зарегистрируйтесь' });
+        }
+      }
     },
   });
 
@@ -71,16 +79,22 @@ const Login = () => {
                       autoComplete="current-password"
                       required
                       placeholder="Ваш пароль"
-                      isInvalid={formik.touched.password && formik.errors.password}
+                      isInvalid={formik.touched.password && formik.errors.password
+                        && formik.errors.auth}
                     />
                     <Form.Control.Feedback type="invalid" tooltip>
-                      {formik.touched.password && formik.errors.password}
+                      {formik.touched.password && formik.errors.password && formik.errors.auth}
                     </Form.Control.Feedback>
                     <Form.Label htmlFor="password">Ваш пароль</Form.Label>
                   </Form.Group>
                   <Button type="submit" variant="outline-primary" className="w-100 mb-3">Войти</Button>
 
                 </Form>
+                {formik.status && (
+                  <Alert key="login-error" variant="danger">
+                    {formik.status.auth}
+                  </Alert>
+                )}
 
               </div>
               <div className="card-footer p-4">
