@@ -4,7 +4,7 @@ import messagesReducer from './messagesSlice';
 
 const store = configureStore({
   reducer: {
-    messeges: messagesReducer,
+    messages: messagesReducer,
     channels: channelsReducer,
   },
 });

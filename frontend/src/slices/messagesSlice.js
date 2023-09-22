@@ -1,9 +1,6 @@
 import { createSlice, createEntityAdapter } from '@reduxjs/toolkit';
 
-// BEGIN (write your solution here)
 const messagesAdapter = createEntityAdapter();
-
-// По умолчанию: { ids: [], entities: {} }
 
 const messagesSlice = createSlice({
   name: 'messages',

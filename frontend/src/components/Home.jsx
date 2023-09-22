@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
-// import io from 'socket.io-client';
+import io from 'socket.io-client';
 // import Spinner from 'react-bootstrap/Spinner';
 import ChannelList from './ChannelList.jsx';
 import MessageList from './MessageList.jsx';
@@ -14,11 +14,13 @@ import { actions as messagesActions } from '../slices/messagesSlice.js';
 const Home = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  // const socket = io('http://localhost:5001');
+  const socket = io('http://localhost:5001');
 
-  // const sendMessage = (message) => {
-  //   socket.emit('newMessage', { body: message.text, channelId: 1, username: currentUser });
-  // }
+  const currentUser = localStorage.getItem('username');
+
+  const sendMessage = (message) => {
+    socket.emit('newMessage', { body: message.text, channelId: 1, username: currentUser });
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -31,8 +33,6 @@ const Home = () => {
       }
 
       // Загрузка каналов и сообщений с сервера (axios, fetch и т.д.)
-      const currentUser = localStorage.getItem('username');
-      console.log(currentUser);
       const allData = await axios.get('/api/v1/data', {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -42,9 +42,13 @@ const Home = () => {
       });
       const channelsData = allData.channels;
       const messagesData = allData.messages;
+      console.log(channelsData);
+      console.log(messagesData);
+      console.log(channelsActions);
+      console.log(messagesActions);
 
       // Сохранение данных в Redux
-      dispatch(channelsActions.addUsers(channelsData));
+      dispatch(channelsActions.addchannels(channelsData));
       dispatch(messagesActions.addMessages(messagesData));
     }
 
