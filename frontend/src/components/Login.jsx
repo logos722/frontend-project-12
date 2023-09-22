@@ -19,6 +19,7 @@ const Login = () => {
     validationSchema: LoginSchema,
     onSubmit: async (values) => {
       try {
+        const { username } = values;
         const formDate = JSON.stringify(values, null, 2);
         console.log(formDate);
         const serverData = await axios.post('/api/v1/login', { username: formDate.username, password: formDate.password }).then((response) => {
@@ -26,10 +27,13 @@ const Login = () => {
         });
         const { token } = serverData;
         localStorage.setItem('token', token);
+        localStorage.setItem('username', username);
         navigate('/', { replace: false });
       } catch (e) {
         console.log(e);
         if (e.code === 'ERR_BAD_REQUEST') {
+          formik.setStatus({ auth: 'Вы не зарегистрированы, пожалуйста, зарегистрируйтесь' });
+        } else {
           formik.setStatus({ auth: 'Вы не зарегистрированы, пожалуйста, зарегистрируйтесь' });
         }
       }

@@ -1,27 +1,54 @@
-import { loremIpsum } from 'lorem-ipsum';
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
+// import io from 'socket.io-client';
 // import Spinner from 'react-bootstrap/Spinner';
-import ChannelsBox from './ChannelsBox.jsx';
-import ChatBox from './ChatBox.jsx';
+import ChannelList from './ChannelList.jsx';
+import MessageList from './MessageList.jsx';
 import Modal from './Modal.jsx';
-import { actions } from '../slices/index.js';
-import routes from '../routes.js';
-import { useAuth } from '../hooks/index.js';
+import { actions as channelsActions } from '../slices/channelsSlice.js';
+import { actions as messagesActions } from '../slices/messagesSlice.js';
+// import routes from '../routes.js';
 
 const Home = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  // const socket = io('http://localhost:5001');
+
+  // const sendMessage = (message) => {
+  //   socket.emit('newMessage', { body: message.text, channelId: 1, username: currentUser });
+  // }
 
   useEffect(() => {
-    // Проверка наличия токена в localStorage
-    const token = localStorage.getItem('token');
+    async function fetchData() {
+      // Проверка наличия токена в localStorage
+      const token = localStorage.getItem('token');
 
-    if (!token) {
-      // Если токена нет, перенаправляем пользователя на страницу входа
-      navigate('/login');
+      if (!token) {
+        // Если токена нет, перенаправляем пользователя на страницу входа
+        navigate('/login');
+      }
+
+      // Загрузка каналов и сообщений с сервера (axios, fetch и т.д.)
+      const currentUser = localStorage.getItem('username');
+      console.log(currentUser);
+      const allData = await axios.get('/api/v1/data', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }).then((response) => {
+        return response.data; // => { channels: [...], currentChannelId: 1, messages: [] }
+      });
+      const channelsData = allData.channels;
+      const messagesData = allData.messages;
+
+      // Сохранение данных в Redux
+      dispatch(channelsActions.addUsers(channelsData));
+      dispatch(messagesActions.addMessages(messagesData));
     }
+
+    fetchData();
   }, []);
 
   return (
@@ -30,10 +57,10 @@ const Home = () => {
       <div className="container h-100 my-4 overflow-hidden rounded shadow">
         <div className="row h-100 bg-white flex-md-row">
           <div className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex">
-            <ChannelsBox />
+            <ChannelList />
           </div>
           <div className="col p-0 h-100">
-            <ChatBox />
+            <MessageList />
           </div>
         </div>
       </div>
