@@ -19,7 +19,9 @@ const Home = () => {
   const currentUser = localStorage.getItem('username');
 
   const sendMessage = (message) => {
-    socket.emit('newMessage', { body: message.text, channelId: 1, username: currentUser });
+    socket.emit('newMessage', { body: message.text, channelId: 1, username: currentUser }, (acknowledgmentData) => {
+      console.log('Сообщение успешно отправлено:', acknowledgmentData);
+    });
   };
 
   useEffect(() => {
