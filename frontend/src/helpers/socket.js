@@ -1,13 +1,26 @@
+/* eslint-disable no-undef */
 import io from 'socket.io-client';
 
 const socket = io('http://localhost:5001');
 
-const currentUser = localStorage.getItem('username');
-
 const sendMessage = (message) => {
-  socket.emit('newMessage', { body: message.text, channelId: 1, username: currentUser }, (acknowledgmentData) => {
+  socket.emit('newMessage', message, (acknowledgmentData) => {
     console.log('Сообщение успешно отправлено:', acknowledgmentData);
   });
 };
 
-export default sendMessage;
+const subscribeToNewMessages = (dispatch, action) => {
+  socket.on('newMessage', (message) => {
+    dispatch(action(message));
+  });
+
+  return () => {
+    socket.off('newMessage');
+  };
+};
+
+const unsubscribe = (event) => {
+  socket.off(event);
+};
+
+export { sendMessage, subscribeToNewMessages, unsubscribe };

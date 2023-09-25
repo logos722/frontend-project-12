@@ -1,12 +1,21 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import sendMessage from '../helpers/socket.js';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { sendMessage, subscribeToNewMessages } from '../helpers/socket.js';
 
-import { selectors as MessageSelector } from '../slices/messagesSlice.js';
+import { selectors as MessageSelector, actions as messagesActions } from '../slices/messagesSlice.js';
 
 const MessageList = () => {
   const [newMessageText, setNewMessageText] = useState('');
   const messages = useSelector(MessageSelector.selectAll);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const unsubscribe = subscribeToNewMessages(dispatch, messagesActions.addMessage);
+
+    return () => {
+      unsubscribe(); // Очищаем подписку при размонтировании компонента
+    };
+  }, [dispatch]);
 
   const handleSendMessage = (e) => {
     e.preventDefault();
@@ -15,7 +24,9 @@ const MessageList = () => {
       return; // Не отправляем пустые сообщения
     }
 
-    const messageData = { text: newMessageText };
+    const currentUser = localStorage.getItem('username');
+
+    const messageData = { text: newMessageText, channelId: 1, username: currentUser };
 
     sendMessage(messageData, (acknowledgmentData) => {
       console.log('Подтверждение от сервера:', acknowledgmentData);
@@ -31,8 +42,16 @@ const MessageList = () => {
         {messages.map((message) => (
           <li key={message.id}>{message.text}</li>
         ))}
-        <input onSubmit={sendMessage} type="text" />
       </ul>
+      <form onSubmit={handleSendMessage}>
+        <input
+          type="text"
+          placeholder="Введите ваше сообщение..."
+          value={newMessageText}
+          onChange={(e) => setNewMessageText(e.target.value)}
+        />
+        <button type="submit">Отправить</button>
+      </form>
     </div>
   );
 };
