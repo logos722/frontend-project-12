@@ -2,23 +2,23 @@ import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { useDispatch } from 'react-redux';
+import { sendChannel } from '../helpers/socket.js';
 
-import { actions as ChannelActions } from '../slices/channelsSlice.js';
-
-const ModalAdd = ({ show, handleClose, latestChannel }) => {
+const ModalAdd = ({ show, handleClose /* latestChannel */ }) => {
   const [channelName, setChannelName] = useState(''); // Локальное состояние для имени канала
-  const dispatch = useDispatch();
 
   const handleSave = () => {
     // Выполните здесь логику сохранения нового канала
     // Используйте значение channelName для имени нового канала
     // Затем вызовите handleClose, чтобы закрыть модальное окно
     // Например, отправьте запрос на сервер для создания канала
-    const newChannel = { id: latestChannel.id + 1, name: channelName, removable: false };
-    dispatch(ChannelActions.addchannel(newChannel));
-
-    // После успешного сохранения можно сбросить значение channelName
+    const resultName = `# ${channelName}`;
+    // const newChannel = { id: latestChannel.id + 1, name: resultName, removable: false };
+    const newChannel = { name: resultName };
+    sendChannel(newChannel, (acknowledgmentData) => {
+      console.log('Подтверждение от сервера:', acknowledgmentData);
+      // После отправки сообщения можно обновить состояние или очистить поле ввода
+    });
     setChannelName('');
     handleClose();
   };

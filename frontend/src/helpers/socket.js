@@ -19,8 +19,26 @@ const subscribeToNewMessages = (dispatch, action) => {
   };
 };
 
+const subscribeToNewChannel = (dispatch, action) => {
+  socket.on('newChannel', (channel) => {
+    dispatch(action(channel));
+  });
+
+  return () => {
+    socket.off('newChannel');
+  };
+};
+
+const sendChannel = (channel) => {
+  socket.emit('newChannel', channel, (acknowledgmentData) => {
+    console.log('Канал успешно добавлен:', acknowledgmentData);
+  });
+};
+
 const unsubscribe = (event) => {
   socket.off(event);
 };
 
-export { sendMessage, subscribeToNewMessages, unsubscribe };
+export {
+  sendMessage, subscribeToNewMessages, subscribeToNewChannel, sendChannel, unsubscribe,
+};

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import ModalAdd from './ModalAdd.jsx';
+import { subscribeToNewChannel } from '../helpers/socket.js';
 
-import { selectors as ChannelSelectors } from '../slices/channelsSlice.js';
+import { selectors as ChannelSelectors, actions as channelActions } from '../slices/channelsSlice.js';
 
 const ChannelList = () => {
   const channels = useSelector(ChannelSelectors.selectAll);
@@ -12,7 +13,16 @@ const ChannelList = () => {
     console.log(chan);
     return chan;
   });
+  const dispatch = useDispatch();
   const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToNewChannel(dispatch, channelActions.addchannel);
+
+    return () => {
+      unsubscribe(); // Очищаем подписку при размонтировании компонента
+    };
+  }, [dispatch]);
 
   const handleOpenModal = () => {
     console.log(channels);
