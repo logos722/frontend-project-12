@@ -4,8 +4,9 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { sendChannel } from '../helpers/socket.js';
 
-const ModalAdd = ({ show, handleClose /* latestChannel */ }) => {
+const ModalAdd = ({ show, handleClose, changeChannel }) => {
   const [channelName, setChannelName] = useState(''); // Локальное состояние для имени канала
+  const [newChannelID, setChannelID] = useState(null); // Локальное состояние для имени канала
 
   const handleSave = () => {
     // Выполните здесь логику сохранения нового канала
@@ -17,10 +18,12 @@ const ModalAdd = ({ show, handleClose /* latestChannel */ }) => {
     const newChannel = { name: resultName };
     sendChannel(newChannel, (acknowledgmentData) => {
       console.log('Подтверждение от сервера:', acknowledgmentData);
+      setChannelID(acknowledgmentData.data.id);
       // После отправки сообщения можно обновить состояние или очистить поле ввода
     });
     setChannelName('');
     handleClose();
+    changeChannel(newChannelID);
   };
 
   return (

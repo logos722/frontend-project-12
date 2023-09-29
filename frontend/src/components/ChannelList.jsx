@@ -7,12 +7,6 @@ import { selectors as ChannelSelectors, actions as channelActions } from '../sli
 
 const ChannelList = () => {
   const channels = useSelector(ChannelSelectors.selectAll);
-  const latestChannel = useSelector((state) => {
-    const channelse = ChannelSelectors.selectAll(state);
-    const chan = channelse.slice(-1)[0];
-    console.log(chan);
-    return chan;
-  });
   const dispatch = useDispatch();
   const [showModal, setShowModal] = useState(false);
 
@@ -23,6 +17,10 @@ const ChannelList = () => {
       unsubscribe(); // Очищаем подписку при размонтировании компонента
     };
   }, [dispatch]);
+
+  const changeChannel = (channelId) => {
+    dispatch(channelActions.changeChannel(channelId));
+  };
 
   const handleOpenModal = () => {
     console.log(channels);
@@ -38,11 +36,14 @@ const ChannelList = () => {
       <div>
         <h2>Channels</h2>
         <button type="submit" onClick={handleOpenModal}>Добавить канал</button>
-        <ModalAdd show={showModal} handleClose={handleCloseModal} latestChannel={latestChannel} />
+        <ModalAdd show={showModal} handleClose={handleCloseModal} changeChannel={changeChannel} />
       </div>
       <ul>
         {channels.map((channel) => (
-          <li key={channel.id}>{channel.name}</li>
+          <li key={channel.id}>
+            <button type="submit" onClick={() => changeChannel(channel.id)}>{channel.name}</button>
+
+          </li>
         ))}
       </ul>
     </div>

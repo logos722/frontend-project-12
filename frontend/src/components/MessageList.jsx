@@ -6,7 +6,9 @@ import { selectors as MessageSelector, actions as messagesActions } from '../sli
 
 const MessageList = () => {
   const [newMessageText, setNewMessageText] = useState('');
+  const currentChannelId = useSelector((state) => state.channels.currentChannelId);
   const messages = useSelector(MessageSelector.selectAll);
+  const currentChannelMessages = messages.filter(({ channelId }) => channelId === currentChannelId);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -26,23 +28,27 @@ const MessageList = () => {
 
     const currentUser = localStorage.getItem('username');
 
-    const messageData = { text: newMessageText, channelId: 1, username: currentUser };
+    const msgData = { text: newMessageText, channelId: currentChannelId, username: currentUser };
 
-    sendMessage(messageData, (acknowledgmentData) => {
+    sendMessage(msgData, (acknowledgmentData) => {
       console.log('Подтверждение от сервера:', acknowledgmentData);
       // После отправки сообщения можно обновить состояние или очистить поле ввода
-      setNewMessageText('');
     });
+    setNewMessageText('');
   };
-
+  console.log(currentChannelId);
   return (
     <div className="message-list">
       <h2>Messages</h2>
-      <ul>
-        {messages.map((message) => (
-          <li key={message.id}>{message.text}</li>
-        ))}
-      </ul>
+      <h3>Текущий канал: </h3>
+      {currentChannelMessages
+        ? (
+          <ul>
+            {currentChannelMessages.map((message) => (
+              <li key={message.id}>{message.username}: {message.text}</li>
+            ))}
+          </ul>
+        ) : null}
       <form onSubmit={handleSendMessage}>
         <input
           type="text"
