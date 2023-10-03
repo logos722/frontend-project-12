@@ -40,7 +40,7 @@ const MessageList = () => {
   return (
     <div className="message-list">
       <h2>Messages</h2>
-      <h3>Текущий канал: </h3>
+      <h3>Текущий канал: {currentChannelMessages.name} </h3>
       {currentChannelMessages
         ? (
           <ul>

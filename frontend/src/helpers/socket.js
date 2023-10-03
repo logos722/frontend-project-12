@@ -19,6 +19,44 @@ const subscribeToNewMessages = (dispatch, action) => {
   };
 };
 
+const sendRenameChannel = (channel) => {
+  socket.emit('renameChannel', channel, (acknowledgmentData) => {
+    console.log('Канал успешно переименован:', acknowledgmentData);
+  });
+};
+
+const subscribeToRenameChannel = (dispatch, action) => {
+  socket.on('renameChannel', (channel) => {
+    dispatch(action(channel));
+  });
+
+  return () => {
+    socket.off('renameChannel');
+  };
+};
+
+const sendRemoveChannel = (id) => {
+  socket.emit('removeChannel', id, (acknowledgmentData) => {
+    console.log('Канал успешно удалён:', acknowledgmentData);
+  });
+};
+
+const subscribeToRemoveChannel = (dispatch, action) => {
+  socket.on('removeChannel', (channel) => {
+    dispatch(action(channel));
+  });
+
+  return () => {
+    socket.off('removeChannel');
+  };
+};
+
+const sendChannel = (channel) => {
+  socket.emit('newChannel', channel, (acknowledgmentData) => {
+    console.log('Канал успешно добавлен:', acknowledgmentData);
+  });
+};
+
 const subscribeToNewChannel = (dispatch, action) => {
   socket.on('newChannel', (channel) => {
     dispatch(action(channel));
@@ -29,16 +67,14 @@ const subscribeToNewChannel = (dispatch, action) => {
   };
 };
 
-const sendChannel = (channel) => {
-  socket.emit('newChannel', channel, (acknowledgmentData) => {
-    console.log('Канал успешно добавлен:', acknowledgmentData);
-  });
-};
-
 const unsubscribe = (event) => {
   socket.off(event);
 };
 
 export {
-  sendMessage, subscribeToNewMessages, subscribeToNewChannel, sendChannel, unsubscribe,
+  sendMessage, subscribeToNewMessages,
+  subscribeToNewChannel, sendChannel,
+  subscribeToRenameChannel, sendRenameChannel,
+  subscribeToRemoveChannel, sendRemoveChannel,
+  unsubscribe,
 };
