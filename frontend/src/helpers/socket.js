@@ -27,7 +27,8 @@ const sendRenameChannel = (channel) => {
 
 const subscribeToRenameChannel = (dispatch, action) => {
   socket.on('renameChannel', (channel) => {
-    dispatch(action(channel));
+    const data = { id: channel.id, changes: channel };
+    dispatch(action(data));
   });
 
   return () => {
@@ -43,7 +44,7 @@ const sendRemoveChannel = (id) => {
 
 const subscribeToRemoveChannel = (dispatch, action) => {
   socket.on('removeChannel', (channel) => {
-    dispatch(action(channel));
+    dispatch(action(channel.id));
   });
 
   return () => {

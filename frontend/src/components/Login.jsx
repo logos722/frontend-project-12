@@ -7,7 +7,7 @@ import axios from 'axios';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import avatar from '../assets/image/avatar.jpg';
-import LoginSchema from '../helpers/validator.js';
+import { LoginSchema } from '../helpers/validator.js';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -105,7 +105,7 @@ const Login = () => {
                 <div className="text-center">
                   <span>Нет аккаунта?</span>
                   {' '}
-                  <Link to="/">Зарегестрироваться</Link>
+                  <Link to="/signup">Зарегестрироваться</Link>
                 </div>
               </div>
             </div>

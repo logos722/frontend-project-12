@@ -27,7 +27,7 @@ const ChannelList = () => {
       unsubRenameChannel();
       unsubRemoveChannel(); // Очищаем подписку при размонтировании компонента
     };
-  }, [dispatch]);
+  }, []);
 
   const changeChannel = (channelId) => {
     console.log(channelId);
