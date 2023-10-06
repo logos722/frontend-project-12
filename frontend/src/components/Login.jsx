@@ -6,10 +6,12 @@ import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
+import { useTranslation } from 'react-i18next';
 import avatar from '../assets/image/avatar.jpg';
 import { LoginSchema } from '../helpers/validator.js';
 
 const Login = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
@@ -32,9 +34,9 @@ const Login = () => {
       } catch (e) {
         console.log(e);
         if (e.code === 'ERR_BAD_REQUEST') {
-          formik.setStatus({ auth: 'Вы не зарегистрированы, пожалуйста, зарегистрируйтесь' });
+          formik.setStatus({ auth: t('login.authFailed') });
         } else {
-          formik.setStatus({ auth: 'Вы не зарегистрированы, пожалуйста, зарегистрируйтесь' });
+          formik.setStatus({ auth: t('login.authFailed') });
         }
       }
     },
@@ -55,7 +57,7 @@ const Login = () => {
                   />
                 </div>
                 <Form onSubmit={formik.handleSubmit} className="col-12 col-md-6 mt-3 mt-mb-0">
-                  <h1 className="text-center mb-4">Войти</h1>
+                  <h1 className="text-center mb-4">{t('login.header')}</h1>
                   <Form.Group className="form-floating mb-3">
                     <Form.Control
                       type="text"
@@ -65,13 +67,13 @@ const Login = () => {
                       id="username"
                       autoComplete="username"
                       required
-                      placeholder="Ваш ник"
+                      placeholder={t('login.username')}
                       isInvalid={formik.touched.username && formik.errors.username}
                     />
                     <Form.Control.Feedback type="invalid" tooltip>
                       {formik.touched.username && formik.errors.username}
                     </Form.Control.Feedback>
-                    <label htmlFor="username">Ваш ник</label>
+                    <label htmlFor="username">{t('login.username')}</label>
                   </Form.Group>
                   <Form.Group className="form-floating mb-4">
                     <Form.Control
@@ -82,16 +84,16 @@ const Login = () => {
                       id="password"
                       autoComplete="current-password"
                       required
-                      placeholder="Ваш пароль"
+                      placeholder={t('login.password')}
                       isInvalid={formik.touched.password && formik.errors.password
                         && formik.errors.auth}
                     />
                     <Form.Control.Feedback type="invalid" tooltip>
                       {formik.touched.password && formik.errors.password && formik.errors.auth}
                     </Form.Control.Feedback>
-                    <Form.Label htmlFor="password">Ваш пароль</Form.Label>
+                    <Form.Label htmlFor="password">{t('login.password')}</Form.Label>
                   </Form.Group>
-                  <Button type="submit" variant="outline-primary" className="w-100 mb-3">Войти</Button>
+                  <Button type="submit" variant="outline-primary" className="w-100 mb-3">{t('login.submit')}</Button>
 
                 </Form>
                 {formik.status && (
@@ -103,9 +105,9 @@ const Login = () => {
               </div>
               <div className="card-footer p-4">
                 <div className="text-center">
-                  <span>Нет аккаунта?</span>
+                  <span>{t('login.newToChat')}</span>
                   {' '}
-                  <Link to="/signup">Зарегестрироваться</Link>
+                  <Link to="/signup">{t('login.signup')}</Link>
                 </div>
               </div>
             </div>

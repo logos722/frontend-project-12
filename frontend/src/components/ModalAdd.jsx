@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import { useTranslation } from 'react-i18next';
 import { sendChannel } from '../helpers/socket.js';
 
 const ModalAdd = ({ show, handleClose, changeChannel }) => {
+  const { t } = useTranslation();
   const [channelName, setChannelName] = useState(''); // Локальное состояние для имени канала
   const [newChannelID, setChannelID] = useState(null); // Локальное состояние для имени канала
 
@@ -29,12 +31,12 @@ const ModalAdd = ({ show, handleClose, changeChannel }) => {
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Добавление канала</Modal.Title>
+        <Modal.Title>{t('modals.add')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
           <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-            <Form.Label>Название канала</Form.Label>
+            <Form.Label>{t('modals.channelName')}</Form.Label>
             <Form.Control
               type="text"
               placeholder="test"
@@ -47,10 +49,10 @@ const ModalAdd = ({ show, handleClose, changeChannel }) => {
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>
-          Close
+          {t('modals.cancel')}
         </Button>
         <Button variant="primary" onClick={handleSave}>
-          Save Changes
+          {t('modals.submit')}
         </Button>
       </Modal.Footer>
     </Modal>

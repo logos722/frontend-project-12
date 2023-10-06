@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { sendMessage, subscribeToNewMessages } from '../helpers/socket.js';
 
 import { selectors as MessageSelector, actions as messagesActions } from '../slices/messagesSlice.js';
 
 const MessageList = () => {
+  const { t } = useTranslation();
   const [newMessageText, setNewMessageText] = useState('');
   const currentChannelId = useSelector((state) => state.channels.currentChannelId);
   const messages = useSelector(MessageSelector.selectAll);
@@ -39,8 +41,8 @@ const MessageList = () => {
   console.log(currentChannelId);
   return (
     <div className="message-list">
-      <h2>Messages</h2>
-      <h3>Текущий канал: {currentChannelMessages.name} </h3>
+      <h2>{t('chat.messageCount_few')}</h2>
+      <h3>{t('chat.currentChannel')} {currentChannelMessages.name} </h3>
       {currentChannelMessages
         ? (
           <ul>
@@ -52,11 +54,11 @@ const MessageList = () => {
       <form onSubmit={handleSendMessage}>
         <input
           type="text"
-          placeholder="Введите ваше сообщение..."
+          placeholder={t('chat.newMessage')}
           value={newMessageText}
           onChange={(e) => setNewMessageText(e.target.value)}
         />
-        <button type="submit">Отправить</button>
+        <button type="submit">{t('chat.send')}</button>
       </form>
     </div>
   );

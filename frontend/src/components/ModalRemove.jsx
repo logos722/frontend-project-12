@@ -2,9 +2,11 @@
 import React from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import { useTranslation } from 'react-i18next';
 import { sendRemoveChannel } from '../helpers/socket.js';
 
 const ModalRemove = ({ show, handleClose, channelId }) => {
+  const { t } = useTranslation();
   const handleSubmit = () => {
     console.log(channelId);
     const obj = { id: channelId };
@@ -17,17 +19,17 @@ const ModalRemove = ({ show, handleClose, channelId }) => {
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Удаление канала</Modal.Title>
+        <Modal.Title>{t('modals.remove')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        Вы точно хотите удалить канал?
+        {t('modals.confirmation')}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>
-          Close
+          {t('modals.cancel')}
         </Button>
         <Button variant="primary" onClick={handleSubmit}>
-          Save Changes
+          {t('modals.submit')}
         </Button>
       </Modal.Footer>
     </Modal>

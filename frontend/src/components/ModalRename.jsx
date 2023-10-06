@@ -3,9 +3,11 @@ import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import { useTranslation } from 'react-i18next';
 import { sendRenameChannel } from '../helpers/socket.js';
 
 const ModalRename = ({ show, handleClose, channelId, changeChannel }) => {
+  const { t } = useTranslation();
   const [channelName, setChannelName] = useState(''); // Локальное состояние для имени канала
 
   const handleRename = () => {
@@ -24,12 +26,12 @@ const ModalRename = ({ show, handleClose, channelId, changeChannel }) => {
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Переименовать канал</Modal.Title>
+        <Modal.Title>{t('modals.rename')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
           <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-            <Form.Label>Новое название канала</Form.Label>
+            <Form.Label>{t('modals.editChannelName')}</Form.Label>
             <Form.Control
               type="text"
               placeholder="test"
@@ -42,10 +44,10 @@ const ModalRename = ({ show, handleClose, channelId, changeChannel }) => {
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>
-          Close
+          {t('modals.cancel')}
         </Button>
         <Button variant="primary" onClick={handleRename}>
-          Save Changes
+          {t('modals.submit')}
         </Button>
       </Modal.Footer>
     </Modal>

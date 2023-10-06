@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Button from 'react-bootstrap/Button';
+import { useTranslation } from 'react-i18next';
 import ModalAdd from './ModalAdd.jsx';
 import ModalRemove from './ModalRemove.jsx';
 import ModalRename from './ModalRename.jsx';
@@ -11,6 +12,7 @@ import { subscribeToNewChannel, subscribeToRemoveChannel, subscribeToRenameChann
 import { selectors as ChannelSelectors, actions as channelActions } from '../slices/channelsSlice.js';
 
 const ChannelList = () => {
+  const { t } = useTranslation();
   const channels = useSelector(ChannelSelectors.selectAll);
   const dispatch = useDispatch();
   const [showModal, setShowAddModal] = useState(false);
@@ -45,8 +47,8 @@ const ChannelList = () => {
   return (
     <div className="channel-list">
       <div>
-        <h2>Channels</h2>
-        <button type="submit" onClick={() => handleOpenModal(setShowAddModal)}>Добавить канал</button>
+        <h2>{t('channels.channels')}</h2>
+        <button type="submit" onClick={() => handleOpenModal(setShowAddModal)}>{t('modals.add')}</button>
         <ModalAdd
           show={showModal}
           handleClose={() => handleCloseModal(setShowAddModal)}
@@ -63,7 +65,7 @@ const ChannelList = () => {
 
               <Dropdown.Menu>
                 <Dropdown.Item>
-                  <Button variant="Primary" type="submit" onClick={() => handleOpenModal(setShowRenameModal)}>переименовать</Button>
+                  <Button variant="Primary" type="submit" onClick={() => handleOpenModal(setShowRenameModal)}>{t('modals.rename')}</Button>
                   <ModalRename
                     show={showRenameModal}
                     handleClose={() => handleCloseModal(setShowRenameModal)}
@@ -72,7 +74,7 @@ const ChannelList = () => {
                   />
                 </Dropdown.Item>
                 <Dropdown.Item>
-                  <Button variant="Primary" type="submit" onClick={() => handleOpenModal(setShowDeleteModal)}>удалить</Button>
+                  <Button variant="Primary" type="submit" onClick={() => handleOpenModal(setShowDeleteModal)}>{t('modals.remove')}</Button>
                   <ModalRemove
                     show={showDeleteModal}
                     handleClose={() => handleCloseModal(setShowDeleteModal)}

@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 import Button from 'react-bootstrap/Button';
+import { useTranslation } from 'react-i18next';
 import avatar from '../assets/image/avatar.jpg';
 import { RegisterSchema } from '../helpers/validator.js';
 
 const Registration = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [registrationFailed, setRegistrationFailed] = useState(false);
   const inputRef = useRef();
@@ -64,7 +66,7 @@ const Registration = () => {
                 />
               </div>
               <Form onSubmit={formik.handleSubmit} className="w-50">
-                <h1 className="text-center mb-4">Регистрация</h1>
+                <h1 className="text-center mb-4">{t('signup.header')}</h1>
                 <Form.Group className="form-floating mb-3">
                   <Form.Control
                     onChange={formik.handleChange}
@@ -81,7 +83,7 @@ const Registration = () => {
                     required
                     ref={inputRef}
                   />
-                  <Form.Label htmlFor="username">Имя пользователя</Form.Label>
+                  <Form.Label htmlFor="username">{t('signup.username')}</Form.Label>
                   <Form.Control.Feedback type="invalid" tooltip placement="right">
                     {formik.errors.username}
                   </Form.Control.Feedback>
@@ -92,7 +94,7 @@ const Registration = () => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     value={formik.values.password}
-                    placeholder="Не менее 6 символов"
+                    placeholder={t('signup.passMin')}
                     name="password"
                     id="password"
                     aria-describedby="passwordHelpBlock"
@@ -106,7 +108,7 @@ const Registration = () => {
                   <Form.Control.Feedback type="invalid" tooltip>
                     {formik.errors.password}
                   </Form.Control.Feedback>
-                  <Form.Label htmlFor="password">Пароль</Form.Label>
+                  <Form.Label htmlFor="password">{t('signup.password')}</Form.Label>
                 </Form.Group>
                 <Form.Group className="form-floating mb-4">
                   <Form.Control
@@ -114,7 +116,7 @@ const Registration = () => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     value={formik.values.confirmPassword}
-                    placeholder="Пароли должны совпадать"
+                    placeholder={t('signup.mustMatch')}
                     name="confirmPassword"
                     id="confirmPassword"
                     isInvalid={
@@ -126,13 +128,13 @@ const Registration = () => {
                   />
                   <Form.Control.Feedback type="invalid" tooltip>
                     {registrationFailed
-                      ? 'Такой пользователь уже существует'
+                      ? t('signup.alreadyExists')
                       : formik.errors.confirmPassword}
                   </Form.Control.Feedback>
-                  <Form.Label htmlFor="confirmPassword">Подтвердите пароль</Form.Label>
+                  <Form.Label htmlFor="confirmPassword">{t('signup.confirm')}</Form.Label>
 
                 </Form.Group>
-                <Button type="submit" variant="outline-primary" className="w-100">Зарегистрироваться</Button>
+                <Button type="submit" variant="outline-primary" className="w-100">{t('signup.submit')}</Button>
               </Form>
             </div>
           </div>
