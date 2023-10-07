@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Home from './Home.jsx';
 import Login from './Login.jsx';
 import NF from './NotFound.jsx';
@@ -14,6 +16,7 @@ const App = () => {
         <Route path="*" element={<NF />} />
         <Route path="/signup" element={<Registration />} />
       </Routes>
+      <ToastContainer />
     </BrowserRouter>
   );
 };

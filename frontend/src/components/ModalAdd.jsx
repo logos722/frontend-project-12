@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { sendChannel } from '../helpers/socket.js';
 
@@ -9,8 +10,23 @@ const ModalAdd = ({ show, handleClose, changeChannel }) => {
   const { t } = useTranslation();
   const [channelName, setChannelName] = useState(''); // Локальное состояние для имени канала
   const [newChannelID, setChannelID] = useState(null); // Локальное состояние для имени канала
+  const showConfirmNotification = () => {
+    toast.success(t('channels.created'), {
+      position: 'top-right',
+      autoClose: 5000,
+      hideProgressBar: false,
+      newestOnTop: false,
+      closeOnClick: true,
+      rtl: false,
+      pauseOnFocusLoss: false,
+      draggable: false,
+      pauseOnHover: false,
+      theme: 'light',
+    });
+  };
 
   const handleSave = () => {
+    showConfirmNotification();
     // Выполните здесь логику сохранения нового канала
     // Используйте значение channelName для имени нового канала
     // Затем вызовите handleClose, чтобы закрыть модальное окно

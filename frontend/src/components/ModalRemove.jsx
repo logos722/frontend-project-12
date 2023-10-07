@@ -2,12 +2,28 @@
 import React from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { sendRemoveChannel } from '../helpers/socket.js';
 
 const ModalRemove = ({ show, handleClose, channelId }) => {
   const { t } = useTranslation();
+  const showConfirmNotification = () => {
+    toast.success(t('channels.removed'), {
+      position: 'top-right',
+      autoClose: 5000,
+      hideProgressBar: false,
+      newestOnTop: false,
+      closeOnClick: true,
+      rtl: false,
+      pauseOnFocusLoss: false,
+      draggable: false,
+      pauseOnHover: false,
+      theme: 'light',
+    });
+  };
   const handleSubmit = () => {
+    showConfirmNotification();
     console.log(channelId);
     const obj = { id: channelId };
     sendRemoveChannel(obj, (acknowledgmentData) => {

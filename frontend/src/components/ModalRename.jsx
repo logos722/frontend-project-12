@@ -3,14 +3,30 @@ import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { sendRenameChannel } from '../helpers/socket.js';
 
 const ModalRename = ({ show, handleClose, channelId, changeChannel }) => {
   const { t } = useTranslation();
   const [channelName, setChannelName] = useState(''); // Локальное состояние для имени канала
+  const showConfirmNotification = () => {
+    toast.success(t('channels.renamed'), {
+      position: 'top-right',
+      autoClose: 5000,
+      hideProgressBar: false,
+      newestOnTop: false,
+      closeOnClick: true,
+      rtl: false,
+      pauseOnFocusLoss: false,
+      draggable: false,
+      pauseOnHover: false,
+      theme: 'light',
+    });
+  };
 
   const handleRename = () => {
+    showConfirmNotification();
     console.log(channelId);
     const resultName = `# ${channelName}`;
     const newNameForChannel = { id: channelId, name: resultName };

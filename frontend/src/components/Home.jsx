@@ -2,6 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 // import Spinner from 'react-bootstrap/Spinner';
 import ChannelList from './ChannelList.jsx';
 import MessageList from './MessageList.jsx';
@@ -10,6 +12,7 @@ import { actions as messagesActions } from '../slices/messagesSlice.js';
 // import routes from '../routes.js';
 
 const Home = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -23,24 +26,34 @@ const Home = () => {
         navigate('/login');
       }
 
-      // Загрузка каналов и сообщений с сервера (axios, fetch и т.д.)
-      const allData = await axios.get('/api/v1/data', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }).then((response) => {
-        return response.data; // => { channels: [...], currentChannelId: 1, messages: [] }
-      });
-      const channelsData = allData.channels;
-      const messagesData = allData.messages;
-      console.log(channelsData);
-      console.log(messagesData);
-      console.log(channelsActions);
-      console.log(messagesActions);
+      try {
+        // Загрузка каналов и сообщений с сервера (axios, fetch и т.д.)
+        const allData = await axios.get('/api/v1/data', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }).then((response) => {
+          return response.data; // => { channels: [...], currentChannelId: 1, messages: [] }
+        });
+        const channelsData = allData.channels;
+        const messagesData = allData.messages;
+        console.log(channelsData);
+        console.log(messagesData);
+        console.log(channelsActions);
+        console.log(messagesActions);
 
-      // Сохранение данных в Redux
-      dispatch(channelsActions.addchannels(channelsData));
-      dispatch(messagesActions.addMessages(messagesData));
+        // Сохранение данных в Redux
+        dispatch(channelsActions.addchannels(channelsData));
+        dispatch(messagesActions.addMessages(messagesData));
+      } catch (error) {
+        console.error(error);
+
+        // Отображение уведомления с текстом ошибки
+        toast.error(t('errors.network'), {
+          position: 'top-right',
+          autoClose: 3000,
+        });
+      }
     }
 
     fetchData();
