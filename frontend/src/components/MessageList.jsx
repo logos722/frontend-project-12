@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import profanity from 'leo-profanity';
 import { useTranslation } from 'react-i18next';
+import badWord from '../locales/badWord.js';
 import { sendMessage, subscribeToNewMessages } from '../helpers/socket.js';
 
 import { selectors as MessageSelector, actions as messagesActions } from '../slices/messagesSlice.js';
+
+profanity.add(badWord);
 
 const MessageList = () => {
   const { t } = useTranslation();
@@ -28,9 +32,10 @@ const MessageList = () => {
       return; // Не отправляем пустые сообщения
     }
 
+    const filtered = profanity.clean(newMessageText);
     const currentUser = localStorage.getItem('username');
 
-    const msgData = { text: newMessageText, channelId: currentChannelId, username: currentUser };
+    const msgData = { text: filtered, channelId: currentChannelId, username: currentUser };
 
     sendMessage(msgData, (acknowledgmentData) => {
       console.log('Подтверждение от сервера:', acknowledgmentData);
