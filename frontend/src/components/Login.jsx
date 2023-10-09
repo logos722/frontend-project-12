@@ -1,7 +1,8 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { useFormik } from 'formik';
 import { Link, useNavigate } from 'react-router-dom';
-import React from 'react';
+import { toast } from 'react-toastify';
+import React, { useEffect, useRef } from 'react';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 import Button from 'react-bootstrap/Button';
@@ -11,8 +12,13 @@ import avatar from '../assets/image/avatar.jpg';
 import { LoginSchema } from '../helpers/validator.js';
 
 const Login = () => {
+  const inputRef = useRef();
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
   const formik = useFormik({
     initialValues: {
       username: '',
@@ -20,23 +26,36 @@ const Login = () => {
     },
     validationSchema: LoginSchema,
     onSubmit: async (values) => {
+      console.log('work!');
       try {
-        const { username } = values;
         const formDate = JSON.stringify(values, null, 2);
         console.log(formDate);
-        const serverData = await axios.post('/api/v1/login', { username: formDate.username, password: formDate.password }).then((response) => {
-          return response.data;
-        });
-        const { token } = serverData;
+        const serverData = await axios.post('/api/v1/login', { username: values.username, password: values.password });
+        const { token, username } = serverData.data;
         localStorage.setItem('token', token);
         localStorage.setItem('username', username);
-        navigate('/', { replace: false });
-      } catch (e) {
-        console.log(e);
-        if (e.code === 'ERR_BAD_REQUEST') {
+        console.log(serverData);
+        navigate('/');
+      } catch (err) {
+        // rollbar.error(err);
+        console.error(err);
+        if (!err.isAxiosError) {
+          toast.error(t('errors.unknown'), {
+            position: 'top-right',
+            autoClose: 3000,
+          });
+          return;
+        }
+
+        if (err.response?.status === 401) {
+          // сообщение об ошибке авторизации показываем в форме, а не в тосте
           formik.setStatus({ auth: t('login.authFailed') });
+          inputRef.current.select();
         } else {
-          formik.setStatus({ auth: t('login.authFailed') });
+          toast.error(t('errors.network'), {
+            position: 'top-right',
+            autoClose: 3000,
+          });
         }
       }
     },
@@ -67,6 +86,7 @@ const Login = () => {
                       id="username"
                       autoComplete="username"
                       required
+                      ref={inputRef}
                       placeholder={t('login.username')}
                       isInvalid={formik.touched.username && formik.errors.username}
                     />
