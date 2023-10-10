@@ -19,13 +19,15 @@ const App = () => {
     <Provider config={rollbarConfig}>
       <ErrorBoundary>
         <BrowserRouter>
-          <Navbar />
-          <Routes>
-            <Route exact path="/" element={<Home />} />
-            <Route path="login" element={<Login />} />
-            <Route path="*" element={<NF />} />
-            <Route path="/signup" element={<Registration />} />
-          </Routes>
+          <div className="d-flex flex-column h-100">
+            <Navbar />
+            <Routes>
+              <Route exact path="/" element={<Home />} />
+              <Route path="login" element={<Login />} />
+              <Route path="*" element={<NF />} />
+              <Route path="/signup" element={<Registration />} />
+            </Routes>
+          </div>
           <ToastContainer />
         </BrowserRouter>
       </ErrorBoundary>

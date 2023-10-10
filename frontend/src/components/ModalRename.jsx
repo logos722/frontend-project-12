@@ -28,8 +28,7 @@ const ModalRename = ({ show, handleClose, channelId, changeChannel }) => {
   const handleRename = () => {
     showConfirmNotification();
     console.log(channelId);
-    const resultName = `# ${channelName}`;
-    const newNameForChannel = { id: channelId, name: resultName };
+    const newNameForChannel = { id: channelId, name: channelName };
     console.log(newNameForChannel);
     sendRenameChannel(newNameForChannel, (acknowledgmentData) => {
       console.log('Подтверждение от сервера:', acknowledgmentData);

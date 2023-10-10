@@ -31,9 +31,8 @@ const ModalAdd = ({ show, handleClose, changeChannel }) => {
     // Используйте значение channelName для имени нового канала
     // Затем вызовите handleClose, чтобы закрыть модальное окно
     // Например, отправьте запрос на сервер для создания канала
-    const resultName = `# ${channelName}`;
     // const newChannel = { id: latestChannel.id + 1, name: resultName, removable: false };
-    const newChannel = { name: resultName };
+    const newChannel = { name: channelName };
     sendChannel(newChannel, (acknowledgmentData) => {
       console.log('Подтверждение от сервера:', acknowledgmentData);
       setChannelID(acknowledgmentData.data.id);

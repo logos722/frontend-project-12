@@ -48,7 +48,10 @@ const Home = () => {
         dispatch(messagesActions.addMessages(messagesData));
       } catch (error) {
         console.error(error);
-
+        if (error.response?.status === 401) {
+          navigate('/signup');
+          return;
+        }
         // Отображение уведомления с текстом ошибки
         toast.error(t('errors.network'), {
           position: 'top-right',
@@ -58,6 +61,7 @@ const Home = () => {
     }
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
