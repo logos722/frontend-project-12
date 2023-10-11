@@ -38,7 +38,7 @@ const ModalAdd = ({ show, handleClose, changeChannel }) => {
         <Modal.Title>{t('modals.add')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form>
+        <Form onSubmit={() => handleSave()}>
           <Form.Group className="mb-3" controlId="name">
             <Form.Label>{t('modals.channelName')}</Form.Label>
             <Form.Control
@@ -48,17 +48,25 @@ const ModalAdd = ({ show, handleClose, changeChannel }) => {
               value={channelName}
               onChange={(e) => setChannelName(e.target.value)}
             />
+            <div className="d-flex justify-content-end">
+              <Button
+                className="me-2"
+                variant="secondary"
+                type="button"
+                onClick={handleClose}
+              >
+                {t('modals.cancel')}
+              </Button>
+              <Button
+                variant="primary"
+                type="submit"
+              >
+                {t('modals.submit')}
+              </Button>
+            </div>
           </Form.Group>
         </Form>
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
-          {t('modals.cancel')}
-        </Button>
-        <Button variant="primary" onClick={handleSave}>
-          {t('modals.submit')}
-        </Button>
-      </Modal.Footer>
     </Modal>
   );
 };

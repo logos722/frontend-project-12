@@ -25,18 +25,25 @@ const ModalRemove = ({ show, handleClose, channelId }) => {
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
         <Modal.Title>{t('modals.remove')}</Modal.Title>
+        <Button
+          variant="close"
+          type="button"
+          onClick={handleClose}
+          aria-label="Close"
+          data-bs-dismiss="modal"
+        />
       </Modal.Header>
       <Modal.Body>
-        {t('modals.confirmation')}
+        <p className="lead">{t('modals.confirmation')}</p>
+        <div className="d-flex justify-content-end">
+          <Button type="button" variant="secondary" onClick={handleClose}>
+            {t('modals.cancel')}
+          </Button>
+          <Button type="button" variant="danger" onClick={handleSubmit}>
+            {t('modals.submit')}
+          </Button>
+        </div>
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
-          {t('modals.cancel')}
-        </Button>
-        <Button variant="primary" onClick={handleSubmit}>
-          {t('modals.submit')}
-        </Button>
-      </Modal.Footer>
     </Modal>
   );
 };

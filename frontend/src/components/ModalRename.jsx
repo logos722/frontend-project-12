@@ -33,7 +33,7 @@ const ModalRename = ({ show, handleClose, channelId, changeChannel }) => {
         <Modal.Title>{t('modals.rename')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form>
+        <Form onSubmit={handleRename}>
           <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
             <Form.Label>{t('modals.editChannelName')}</Form.Label>
             <Form.Control
@@ -43,17 +43,17 @@ const ModalRename = ({ show, handleClose, channelId, changeChannel }) => {
               value={channelName}
               onChange={(e) => setChannelName(e.target.value)}
             />
+            <div className="d-flex justify-content-end">
+              <Button type="button" variant="secondary" onClick={handleClose}>
+                {t('modals.cancel')}
+              </Button>
+              <Button variant="primary" type="submit">
+                {t('modals.submit')}
+              </Button>
+            </div>
           </Form.Group>
         </Form>
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
-          {t('modals.cancel')}
-        </Button>
-        <Button variant="danger" onClick={handleRename}>
-          {t('modals.submit')}
-        </Button>
-      </Modal.Footer>
     </Modal>
   );
 };
