@@ -1,18 +1,34 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
+import * as Yup from 'yup';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 import Button from 'react-bootstrap/Button';
 import { useTranslation } from 'react-i18next';
-import avatar from '../assets/image/avatar.jpg';
-import { RegisterSchema } from '../helpers/validator.js';
+import avatar from '../assets/image/avatar_1.6084447160acc893a24d.jpg';
 
 const Registration = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [registrationFailed, setRegistrationFailed] = useState(false);
   const inputRef = useRef();
+  const RegisterSchema = Yup.object().shape({
+    username: Yup
+      .string()
+      .trim()
+      .required(t('signup.required'))
+      .min(3, t('signup.usernameConstraints'))
+      .max(20, t('signup.usernameConstraints')),
+    password: Yup
+      .string()
+      .trim()
+      .required(t('signup.required'))
+      .min(6, t('signup.passMin')),
+    confirmPassword: Yup
+      .string()
+      .test('confirmPassword', t('signup.mustMatch'), (value, context) => value === context.parent.password),
+  });
   const formik = useFormik({
     initialValues: {
       username: '',

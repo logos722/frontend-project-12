@@ -9,7 +9,6 @@ import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import { useTranslation } from 'react-i18next';
 import avatar from '../assets/image/avatar.jpg';
-import { LoginSchema } from '../helpers/validator.js';
 
 const Login = () => {
   const inputRef = useRef();
@@ -24,7 +23,6 @@ const Login = () => {
       username: '',
       password: '',
     },
-    validationSchema: LoginSchema,
     onSubmit: async (values) => {
       console.log('work!');
       try {

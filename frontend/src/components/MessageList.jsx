@@ -62,14 +62,14 @@ const MessageList = () => {
             {currentChannel ? (currentChannel.name) : null}
           </b>
         </p>
-        <span className="text-muted">{messages.length} {t('chat.messageCount_few')}</span>
+        <span className="text-muted">{`${messages.length} ${t('chat.messageCount', { count: messages.length })}`}</span>
       </div>
       <div id="messages-box" className="chat-messages overflow-auto px-5 ">
         {currentChannelMessages
           ? (
             <ul style={{ listStyle: 'none' }}>
               {currentChannelMessages.map((message) => (
-                <li key={message.id}>{message.username}: {message.text}</li>
+                <li key={message.id}><b>{message.username}</b>: {message.text}</li>
               ))}
             </ul>
           ) : null}
