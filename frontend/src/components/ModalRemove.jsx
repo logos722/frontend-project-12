@@ -25,13 +25,6 @@ const ModalRemove = ({ show, handleClose, channelId }) => {
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
         <Modal.Title>{t('modals.remove')}</Modal.Title>
-        <Button
-          variant="close"
-          type="button"
-          onClick={handleClose}
-          aria-label="Close"
-          data-bs-dismiss="modal"
-        />
       </Modal.Header>
       <Modal.Body>
         <p className="lead">{t('modals.confirmation')}</p>
