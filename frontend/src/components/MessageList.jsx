@@ -83,7 +83,7 @@ const MessageList = () => {
         >
           <InputGroup className="has-validation">
             <Form.Control
-              aria-label={t('chat.newMessageAriaLabel')}
+              aria-label={t('chat.newMessage')}
               className="border-0 p-0 ps-2 bg-light"
               name="body"
               onChange={(e) => setNewMessageText(e.target.value)}

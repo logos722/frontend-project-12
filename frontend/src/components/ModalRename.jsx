@@ -61,7 +61,7 @@ const ModalRename = ({ show, handleClose, channelId, changeChannel }) => {
         <Button variant="secondary" onClick={handleClose}>
           {t('modals.cancel')}
         </Button>
-        <Button variant="primary" onClick={handleRename}>
+        <Button variant="danger" onClick={handleRename}>
           {t('modals.submit')}
         </Button>
       </Modal.Footer>

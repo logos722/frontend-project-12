@@ -80,12 +80,12 @@ const ChannelList = () => {
             {channel.removable ? (
               <Dropdown className="d-flex" as={ButtonGroup}>
                 <Button variant={variant(channel.id)} className="w-100 rounded-0 text-start text-truncate btn" type="submit" onClick={() => changeChannel(channel.id)}># {channel.name}</Button>
-
-                <Dropdown.Toggle className="flex-grow-0" split variant="Primary" id="dropdown-split-basic" />
-
+                <Dropdown.Toggle className="flex-grow-0" split variant={variant(channel.id)} id="dropdown-split-basic">
+                  <span className="visually-hidden">{t('channels.menu')}</span>
+                </Dropdown.Toggle>
                 <Dropdown.Menu>
                   <Dropdown.Item>
-                    <Button variant="Primary" type="submit" onClick={() => handleOpenModal(setShowRenameModal)}>{t('modals.rename')}</Button>
+                    <Button variant={variant(channel.id)} type="submit" onClick={() => handleOpenModal(setShowRenameModal)}>{t('modals.rename')}</Button>
                     <ModalRename
                       show={showRenameModal}
                       handleClose={() => handleCloseModal(setShowRenameModal)}
@@ -94,7 +94,7 @@ const ChannelList = () => {
                     />
                   </Dropdown.Item>
                   <Dropdown.Item>
-                    <Button variant="Primary" type="submit" onClick={() => handleOpenModal(setShowDeleteModal)}>{t('modals.remove')}</Button>
+                    <Button variant={variant(channel.id)} type="submit" onClick={() => handleOpenModal(setShowDeleteModal)}>{t('modals.remove')}</Button>
                     <ModalRemove
                       show={showDeleteModal}
                       handleClose={() => handleCloseModal(setShowDeleteModal)}
