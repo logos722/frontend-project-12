@@ -9,18 +9,7 @@ import { sendRemoveChannel } from '../helpers/socket.js';
 const ModalRemove = ({ show, handleClose, channelId }) => {
   const { t } = useTranslation();
   const showConfirmNotification = () => {
-    toast.success(t('channels.removed'), {
-      position: 'top-right',
-      autoClose: 5000,
-      hideProgressBar: false,
-      newestOnTop: false,
-      closeOnClick: true,
-      rtl: false,
-      pauseOnFocusLoss: false,
-      draggable: false,
-      pauseOnHover: false,
-      theme: 'light',
-    });
+    toast.success(t('channels.removed'));
   };
   const handleSubmit = () => {
     showConfirmNotification();

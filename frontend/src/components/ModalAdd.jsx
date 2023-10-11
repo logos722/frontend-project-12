@@ -11,18 +11,7 @@ const ModalAdd = ({ show, handleClose, changeChannel }) => {
   const [channelName, setChannelName] = useState(''); // Локальное состояние для имени канала
   const [newChannelID, setChannelID] = useState(null); // Локальное состояние для имени канала
   const showConfirmNotification = () => {
-    toast.success(t('channels.created'), {
-      position: 'top-right',
-      autoClose: 5000,
-      hideProgressBar: false,
-      newestOnTop: false,
-      closeOnClick: true,
-      rtl: false,
-      pauseOnFocusLoss: false,
-      draggable: false,
-      pauseOnHover: false,
-      theme: 'light',
-    });
+    toast.success(t('channels.created'));
   };
 
   const handleSave = () => {
