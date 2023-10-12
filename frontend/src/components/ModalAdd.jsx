@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useFormik } from 'formik';
+import leoProfanity from 'leo-profanity';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
@@ -7,30 +9,34 @@ import { useTranslation } from 'react-i18next';
 import { sendChannel } from '../helpers/socket.js';
 
 const ModalAdd = ({ show, handleClose, changeChannel }) => {
+  const inputRef = useRef();
   const { t } = useTranslation();
-  const [channelName, setChannelName] = useState(''); // Локальное состояние для имени канала
   const [newChannelID, setChannelID] = useState(null); // Локальное состояние для имени канала
   const showConfirmNotification = () => {
     toast.success(t('channels.created'));
   };
 
-  const handleSave = () => {
-    showConfirmNotification();
-    // Выполните здесь логику сохранения нового канала
-    // Используйте значение channelName для имени нового канала
-    // Затем вызовите handleClose, чтобы закрыть модальное окно
-    // Например, отправьте запрос на сервер для создания канала
-    // const newChannel = { id: latestChannel.id + 1, name: resultName, removable: false };
-    const newChannel = { name: channelName };
-    sendChannel(newChannel, (acknowledgmentData) => {
-      console.log('Подтверждение от сервера:', acknowledgmentData);
-      setChannelID(acknowledgmentData.data.id);
-      // После отправки сообщения можно обновить состояние или очистить поле ввода
-    });
-    setChannelName('');
-    handleClose();
-    changeChannel(newChannelID);
-  };
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
+
+  const formik = useFormik({
+    initialValues: {
+      name: '',
+    },
+    onSubmit: (name) => {
+      const filteredName = leoProfanity.clean(name);
+      const newChannel = { name: filteredName };
+      sendChannel(newChannel, (acknowledgmentData) => {
+        console.log('Подтверждение от сервера:', acknowledgmentData);
+        setChannelID(acknowledgmentData.data.id);
+        // После отправки сообщения можно обновить состояние или очистить поле ввода
+      });
+      showConfirmNotification();
+      handleClose();
+      changeChannel(newChannelID);
+    },
+  });
 
   return (
     <Modal show={show} onHide={handleClose}>
@@ -38,16 +44,22 @@ const ModalAdd = ({ show, handleClose, changeChannel }) => {
         <Modal.Title>{t('modals.add')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form onSubmit={() => handleSave()}>
-          <Form.Group className="mb-3" controlId="name">
+        <Form onSubmit={formik.handleSubmit}>
+          <Form.Group>
             <Form.Label>{t('modals.channelName')}</Form.Label>
             <Form.Control
-              type="text"
-              placeholder="test"
+              className="mb-2"
+              ref={inputRef}
               autoFocus
-              value={channelName}
-              onChange={(e) => setChannelName(e.target.value)}
+              value={formik.values.name}
+              onChange={formik.handleChange}
+              isInvalid={(formik.errors.name && formik.touched.name) || !!formik.status}
+              name="name"
+              id="name"
             />
+            <Form.Control.Feedback type="invalid">
+              {t(formik.errors.name) || t(formik.status)}
+            </Form.Control.Feedback>
             <div className="d-flex justify-content-end">
               <Button
                 className="me-2"

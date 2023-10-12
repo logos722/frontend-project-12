@@ -1,5 +1,6 @@
 /* eslint-disable object-curly-newline */
-import React, { useState } from 'react';
+import { useFormik } from 'formik';
+import React, { useRef, useEffect } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
@@ -8,24 +9,32 @@ import { useTranslation } from 'react-i18next';
 import { sendRenameChannel } from '../helpers/socket.js';
 
 const ModalRename = ({ show, handleClose, channelId, changeChannel }) => {
+  const inputRef = useRef(null);
   const { t } = useTranslation();
-  const [channelName, setChannelName] = useState(''); // Локальное состояние для имени канала
   const showConfirmNotification = () => {
     toast.success(t('channels.rename'));
   };
 
-  const handleRename = () => {
-    showConfirmNotification();
-    console.log(channelId);
-    const newNameForChannel = { id: channelId, name: channelName };
-    console.log(newNameForChannel);
-    sendRenameChannel(newNameForChannel, (acknowledgmentData) => {
-      console.log('Подтверждение от сервера:', acknowledgmentData);
-    });
-    setChannelName('');
-    handleClose();
-    changeChannel(channelId);
-  };
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
+
+  const formik = useFormik({
+    initialValues: {
+      name: '',
+    },
+    onSubmit: (name) => {
+      console.log(channelId);
+      const newNameForChannel = { id: channelId, name };
+      console.log(newNameForChannel);
+      sendRenameChannel(newNameForChannel, (acknowledgmentData) => {
+        console.log('Подтверждение от сервера:', acknowledgmentData);
+      });
+      showConfirmNotification();
+      handleClose();
+      changeChannel(channelId);
+    },
+  });
 
   return (
     <Modal show={show} onHide={handleClose}>
@@ -33,18 +42,23 @@ const ModalRename = ({ show, handleClose, channelId, changeChannel }) => {
         <Modal.Title>{t('modals.rename')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form onSubmit={handleRename}>
-          <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+        <Form onSubmit={formik.handleSubmit}>
+          <Form.Group>
             <Form.Label>{t('modals.editChannelName')}</Form.Label>
             <Form.Control
-              type="text"
-              placeholder="test"
+              className="mb-2"
+              ref={inputRef}
               autoFocus
-              value={channelName}
-              onChange={(e) => setChannelName(e.target.value)}
+              value={formik.values.name}
+              onChange={formik.handleChange}
+              name="name"
+              id="name"
             />
+            <Form.Control.Feedback type="invalid">
+              {t(formik.errors.name) || t(formik.status)}
+            </Form.Control.Feedback>
             <div className="d-flex justify-content-end">
-              <Button type="button" variant="secondary" onClick={handleClose}>
+              <Button className="me-2" type="button" variant="secondary" onClick={handleClose}>
                 {t('modals.cancel')}
               </Button>
               <Button variant="primary" type="submit">

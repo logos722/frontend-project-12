@@ -11,13 +11,14 @@ const ModalRemove = ({ show, handleClose, channelId }) => {
   const showConfirmNotification = () => {
     toast.success(t('channels.removed'));
   };
+
   const handleSubmit = () => {
-    showConfirmNotification();
     console.log(channelId);
     const obj = { id: channelId };
     sendRemoveChannel(obj, (acknowledgmentData) => {
       console.log('Подтверждение от сервера:', acknowledgmentData);
     });
+    showConfirmNotification();
     handleClose();
   };
 
