@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { sendRenameChannel } from '../helpers/socket.js';
 
 const ModalRename = ({ show, handleClose, channelId, changeChannel }) => {
-  const inputRef = useRef(null);
+  const inputRef = useRef();
   const { t } = useTranslation();
   const showConfirmNotification = () => {
     toast.success(t('channels.rename'));
