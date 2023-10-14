@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import leoProfanity from 'leo-profanity';
 import Modal from 'react-bootstrap/Modal';
@@ -9,22 +9,17 @@ import { useTranslation } from 'react-i18next';
 import { sendChannel } from '../helpers/socket.js';
 
 const ModalAdd = ({ show, handleClose, changeChannel }) => {
-  const inputRef = useRef();
   const { t } = useTranslation();
   const [newChannelID, setChannelID] = useState(null); // Локальное состояние для имени канала
   const showConfirmNotification = () => {
     toast.success(t('channels.created'));
   };
 
-  useEffect(() => {
-    inputRef.current.focus();
-  }, []);
-
   const formik = useFormik({
     initialValues: {
       name: '',
     },
-    onSubmit: (name) => {
+    onSubmit: ({ name }) => {
       const filteredName = leoProfanity.clean(name);
       const newChannel = { name: filteredName };
       sendChannel(newChannel, (acknowledgmentData) => {
@@ -49,7 +44,6 @@ const ModalAdd = ({ show, handleClose, changeChannel }) => {
             <Form.Label>{t('modals.channelName')}</Form.Label>
             <Form.Control
               className="mb-2"
-              ref={inputRef}
               autoFocus
               value={formik.values.name}
               onChange={formik.handleChange}

@@ -1,6 +1,5 @@
 /* eslint-disable object-curly-newline */
-import { useFormik } from 'formik';
-import React, { useRef, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
@@ -9,32 +8,40 @@ import { useTranslation } from 'react-i18next';
 import { sendRenameChannel } from '../helpers/socket.js';
 
 const ModalRename = ({ show, handleClose, channelId, changeChannel }) => {
-  const inputRef = useRef();
+  const inputRef = useRef(null); // Создаем ref для элемента input
   const { t } = useTranslation();
+  const [channelName, setChannelName] = useState(''); // Локальное состояние для имени канала
   const showConfirmNotification = () => {
     toast.success(t('channels.rename'));
   };
 
   useEffect(() => {
-    inputRef.current.focus();
-  }, []);
+    const timeoutId = setTimeout(() => {
+      if (show && inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 0);
+    return () => clearTimeout(timeoutId);
+  }, [show]);
 
-  const formik = useFormik({
-    initialValues: {
-      name: '',
-    },
-    onSubmit: (name) => {
-      console.log(channelId);
-      const newNameForChannel = { id: channelId, name };
-      console.log(newNameForChannel);
-      sendRenameChannel(newNameForChannel, (acknowledgmentData) => {
-        console.log('Подтверждение от сервера:', acknowledgmentData);
-      });
-      showConfirmNotification();
-      handleClose();
-      changeChannel(channelId);
-    },
-  });
+  const handleRename = () => {
+    showConfirmNotification();
+    console.log(channelId);
+    const newNameForChannel = { id: channelId, name: channelName };
+    console.log(newNameForChannel);
+    sendRenameChannel(newNameForChannel, (acknowledgmentData) => {
+      console.log('Подтверждение от сервера:', acknowledgmentData);
+    });
+    setChannelName('');
+    handleClose();
+    changeChannel(channelId);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleRename();
+    }
+  };
 
   return (
     <Modal show={show} onHide={handleClose}>
@@ -42,26 +49,24 @@ const ModalRename = ({ show, handleClose, channelId, changeChannel }) => {
         <Modal.Title>{t('modals.rename')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form onSubmit={formik.handleSubmit}>
+        <Form>
           <Form.Group>
             <Form.Label>{t('modals.editChannelName')}</Form.Label>
             <Form.Control
               className="mb-2"
               ref={inputRef}
-              autoFocus
-              value={formik.values.name}
-              onChange={formik.handleChange}
+              value={channelName}
+              onChange={(e) => setChannelName(e.target.value)}
+              onKeyDown={handleKeyPress}
               name="name"
               id="name"
             />
-            <Form.Control.Feedback type="invalid">
-              {t(formik.errors.name) || t(formik.status)}
-            </Form.Control.Feedback>
+            <label className="visually-hidden" htmlFor="name">{t('modals.channelName')}</label>
             <div className="d-flex justify-content-end">
               <Button className="me-2" type="button" variant="secondary" onClick={handleClose}>
                 {t('modals.cancel')}
               </Button>
-              <Button variant="primary" type="submit">
+              <Button variant="primary" onClick={handleRename}>
                 {t('modals.submit')}
               </Button>
             </div>

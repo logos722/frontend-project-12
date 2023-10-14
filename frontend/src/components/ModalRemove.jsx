@@ -28,16 +28,16 @@ const ModalRemove = ({ show, handleClose, channelId }) => {
         <Modal.Title>{t('modals.remove')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p className="lead">{t('modals.confirmation')}</p>
-        <div className="d-flex justify-content-end">
-          <Button type="button" variant="secondary" onClick={handleClose}>
-            {t('modals.cancel')}
-          </Button>
-          <Button type="button" variant="danger" onClick={handleSubmit}>
-            {t('modals.submit')}
-          </Button>
-        </div>
+        {t('modals.confirmation')}
       </Modal.Body>
+      <Modal.Footer>
+        <Button type="button" variant="secondary" onClick={handleClose}>
+          {t('modals.cancel')}
+        </Button>
+        <Button type="button" variant="danger" onClick={handleSubmit}>
+          {t('modals.submit')}
+        </Button>
+      </Modal.Footer>
     </Modal>
   );
 };
