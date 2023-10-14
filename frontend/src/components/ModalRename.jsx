@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import profanity from 'leo-profanity';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { sendRenameChannel } from '../helpers/socket.js';
@@ -27,8 +28,8 @@ const ModalRename = ({ show, handleClose, channelId, changeChannel }) => {
   const handleRename = () => {
     showConfirmNotification();
     console.log(channelId);
-    const resultName = channelName.trim();
-    const newNameForChannel = { id: channelId, name: resultName };
+    const filteredName = profanity.clean(channelName).trim();
+    const newNameForChannel = { id: channelId, name: filteredName };
     console.log(newNameForChannel);
     sendRenameChannel(newNameForChannel, (acknowledgmentData) => {
       console.log('Подтверждение от сервера:', acknowledgmentData);
@@ -39,8 +40,12 @@ const ModalRename = ({ show, handleClose, channelId, changeChannel }) => {
   };
 
   const handleKeyPress = (e) => {
+    console.log('User pressed: ', e.key);
     if (e.key === 'Enter') {
       handleRename();
+    } else if (e.key === ' ') {
+      e.preventDefault(); // Предотвращаем стандартное поведение пробела
+      setChannelName((prevName) => `${prevName} `); // Добавляем пробел к текущему значению
     }
   };
 
