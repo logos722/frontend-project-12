@@ -27,7 +27,8 @@ const ModalRename = ({ show, handleClose, channelId, changeChannel }) => {
   const handleRename = () => {
     showConfirmNotification();
     console.log(channelId);
-    const newNameForChannel = { id: channelId, name: channelName };
+    const resultName = channelName.trim();
+    const newNameForChannel = { id: channelId, name: resultName };
     console.log(newNameForChannel);
     sendRenameChannel(newNameForChannel, (acknowledgmentData) => {
       console.log('Подтверждение от сервера:', acknowledgmentData);
@@ -51,7 +52,6 @@ const ModalRename = ({ show, handleClose, channelId, changeChannel }) => {
       <Modal.Body>
         <Form>
           <Form.Group>
-            <Form.Label>{t('modals.editChannelName')}</Form.Label>
             <Form.Control
               className="mb-2"
               ref={inputRef}
