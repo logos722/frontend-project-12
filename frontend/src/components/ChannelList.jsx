@@ -79,7 +79,8 @@ const ChannelList = () => {
           <li key={channel.id} className="nav-item w-100">
             {channel.removable ? (
               <Dropdown className="d-flex" as={ButtonGroup}>
-                <Button variant={variant(channel.id)} className="w-100 rounded-0 text-start text-truncate btn" type="submit" onClick={() => changeChannel(channel.id)}><span className="me-1">#</span>
+                <Button variant={variant(channel.id)} className="w-100 rounded-0 text-start text-truncate btn" type="submit" onClick={() => changeChannel(channel.id)}>
+                  <span className="me-1">#</span>
                   {channel.name}
                 </Button>
                 <Dropdown.Toggle className="flex-grow-0" split variant={variant(channel.id)} id="dropdown-split-basic">

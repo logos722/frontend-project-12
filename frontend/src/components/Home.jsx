@@ -33,9 +33,7 @@ const Home = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }).then((response) => {
-          return response.data; // => { channels: [...], currentChannelId: 1, messages: [] }
-        });
+        }).then((response) => (response.data));
         const channelsData = allData.channels;
         const messagesData = allData.messages;
         console.log(channelsData);

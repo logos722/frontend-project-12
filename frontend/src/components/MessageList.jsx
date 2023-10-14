@@ -69,7 +69,11 @@ const MessageList = () => {
           ? (
             <ul style={{ listStyle: 'none' }}>
               {currentChannelMessages.map((message) => (
-                <li key={message.id}><b>{message.username}</b>: {message.text}</li>
+                <li key={message.id}>
+                  <b>{message.username}</b>
+                  :
+                  {message.text}
+                </li>
               ))}
             </ul>
           ) : null}
