@@ -12,7 +12,7 @@ const ModalRename = ({ show, handleClose, channelId, changeChannel }) => {
   const { t } = useTranslation();
   const [channelName, setChannelName] = useState(''); // Локальное состояние для имени канала
   const showConfirmNotification = () => {
-    toast.success(t('channels.rename'));
+    toast.success(t('channels.renamed'));
   };
 
   useEffect(() => {
