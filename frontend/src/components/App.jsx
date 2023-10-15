@@ -1,36 +1,42 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import {
+  BrowserRouter, Navigate, Routes, Route,
+} from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
-import { Provider, ErrorBoundary } from '@rollbar/react';
 import 'react-toastify/dist/ReactToastify.css';
 import Navbar from './Navbar.jsx';
 import Home from './Home.jsx';
 import Login from './Login.jsx';
 import NF from './NotFound.jsx';
 import Registration from './Registration.jsx';
+import MainProvider from '../context/MainProvider.jsx';
+import { useAuthContext } from '../context/index.js';
 import '../assets/application.scss';
 
-const rollbarConfig = {
-  accessToken: '3b1d63d048624d49ae9f3df814ad2af5',
-  environment: 'testenv',
+const PrivateRoute = ({ children }) => {
+  const authContext = useAuthContext();
+  return authContext.data ? children : <Navigate to="/login" />;
+};
+
+const AuthRoute = ({ children }) => {
+  const authContext = useAuthContext();
+  return authContext.data ? <Navigate to="/" /> : children;
 };
 
 const App = () => (
-  <Provider config={rollbarConfig}>
-    <ErrorBoundary>
-      <BrowserRouter>
-        <div className="d-flex flex-column h-100">
-          <Navbar />
-          <Routes>
-            <Route exact path="/" element={<Home />} />
-            <Route path="login" element={<Login />} />
-            <Route path="*" element={<NF />} />
-            <Route path="/signup" element={<Registration />} />
-          </Routes>
-        </div>
-        <ToastContainer />
-      </BrowserRouter>
-    </ErrorBoundary>
-  </Provider>
+  <MainProvider>
+    <BrowserRouter>
+      <div className="d-flex flex-column h-100">
+        <Navbar />
+        <Routes>
+          <Route exact path="/" element={(<PrivateRoute><Home /></PrivateRoute>)} />
+          <Route path="/login" element={<AuthRoute><Login /></AuthRoute>} />
+          <Route path="/signup" element={<AuthRoute><Registration /></AuthRoute>} />
+          <Route path="*" element={<NF />} />
+        </Routes>
+      </div>
+      <ToastContainer />
+    </BrowserRouter>
+  </MainProvider>
 );
 
 export default App;

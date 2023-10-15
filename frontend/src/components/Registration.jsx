@@ -6,6 +6,7 @@ import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 import Button from 'react-bootstrap/Button';
 import { useTranslation } from 'react-i18next';
+import { useAuthContext } from '../context/index.js';
 import avatar from '../assets/image/avatar_1.6084447160acc893a24d.jpg';
 
 const Registration = () => {
@@ -13,6 +14,8 @@ const Registration = () => {
   const navigate = useNavigate();
   const [registrationFailed, setRegistrationFailed] = useState(false);
   const inputRef = useRef();
+  const useAuth = useAuthContext();
+
   const RegisterSchema = Yup.object().shape({
     username: Yup
       .string()
@@ -45,6 +48,8 @@ const Registration = () => {
           { username: values.username, password: values.password },
         );
         const { token, username } = res.data;
+        const data
+        useAuth.setUserData(data);
         localStorage.setItem('token', token);
         localStorage.setItem('username', username);
         navigate('/', { replace: false });
