@@ -48,8 +48,6 @@ const RunApp = async () => {
   const addNewChannel = (props, resolve) => {
     socket.emit('newChannel', props, ({ status, data }) => {
       if (status) {
-        console.log('emmitWork!');
-        console.log(data.id);
         resolve(data.id);
       }
     });
@@ -76,10 +74,10 @@ const RunApp = async () => {
   await i18n
     .use(initReactI18next)
     .init({
-      resources, // передаем переводы текстов интерфейса в формате JSON
-      fallbackLng: 'ru', // если переводы на языке пользователя недоступны, то будет использоваться язык, указанный в этом поле
+      resources,
+      fallbackLng: 'ru',
       interpolation: {
-        escapeValue: false, // экранирование уже есть в React, поэтому отключаем
+        escapeValue: false,
       },
     });
 

@@ -32,31 +32,27 @@ const ModalRename = ({ channels, show, handleClose, channelId, changeChannel }) 
   const resolve = (id) => {
     showConfirmNotification();
     setChannelName('');
-    console.log(`Work resolve ${id}`);
     changeChannel(id);
     handleClose();
   };
 
   const handleRename = async () => {
-    console.log(channelId);
     const filteredName = profanity.clean(channelName).trim();
     if (isExistsChannelName(channels, filteredName)) {
       setShowAlert(true);
     } else {
       const newNameForChannel = { id: channelId, name: filteredName };
-      console.log(newNameForChannel);
       await renameChannelName(newNameForChannel, resolve);
     }
   };
 
   const handleKeyPress = (e) => {
-    console.log('User pressed: ', e.key);
     if (e.key === 'Enter') {
       e.preventDefault();
       handleRename();
     } else if (e.key === ' ') {
-      e.preventDefault(); // Предотвращаем стандартное поведение пробела
-      setChannelName((prevName) => `${prevName} `); // Добавляем пробел к текущему значению
+      e.preventDefault();
+      setChannelName((prevName) => `${prevName} `);
     }
   };
 

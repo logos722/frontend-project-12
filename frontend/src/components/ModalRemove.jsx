@@ -19,7 +19,6 @@ const ModalRemove = ({ show, handleClose, channelId }) => {
   };
 
   const handleSubmit = () => {
-    console.log(channelId);
     const obj = { id: channelId };
     removeChannel(obj, resolve);
   };

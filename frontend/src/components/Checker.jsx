@@ -27,7 +27,6 @@ const Checker = () => {
   async function fetchData(token) {
     try {
       setLoad(false);
-      // Загрузка каналов и сообщений с сервера (axios, fetch и т.д.)
       const allData = await axios.get('/api/v1/data', {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -35,12 +34,6 @@ const Checker = () => {
       }).then((response) => (response.data));
       const channelsData = allData.channels;
       const messagesData = allData.messages;
-      console.log(channelsData);
-      console.log(messagesData);
-      console.log(channelsActions);
-      console.log(messagesActions);
-
-      // Сохранение данных в Redux
       dispatch(channelsActions.addchannels(channelsData));
       dispatch(messagesActions.addMessages(messagesData));
       setLoad(true);
@@ -50,7 +43,6 @@ const Checker = () => {
         disconnect();
         return;
       }
-      // Отображение уведомления с текстом ошибки
       toast.error(t('errors.network'), {
         position: 'top-right',
         autoClose: 3000,

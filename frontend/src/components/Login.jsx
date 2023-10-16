@@ -29,10 +29,7 @@ const Login = () => {
       password: '',
     },
     onSubmit: async (values) => {
-      console.log('work!');
       try {
-        const formDate = JSON.stringify(values, null, 2);
-        console.log(formDate);
         const { data } = await axios.post('/api/v1/login', { username: values.username, password: values.password });
         const user = { token: data.token, username: data.username };
         localStorage.setItem('user', JSON.stringify(user));
@@ -40,7 +37,6 @@ const Login = () => {
         navigate('/');
       } catch (err) {
         rollbar.error('Login error', err);
-        console.error(err);
         if (err.code === 'ERR_NETWORK') {
           toast.error(t('errors.network'));
         }
@@ -53,7 +49,6 @@ const Login = () => {
         }
 
         if (err.response?.status === 401) {
-          // сообщение об ошибке авторизации показываем в форме, а не в тосте
           formik.setStatus({ auth: t('login.authFailed') });
           inputRef.current.select();
         }

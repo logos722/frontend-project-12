@@ -14,9 +14,7 @@ const channelsSlice = createSlice({
     addchannels: channelsAdapter.addMany,
     renameChannel: channelsAdapter.updateOne,
     changeChannel: (state, { payload }) => {
-      console.log(`reducer works ${payload}`);
       state.currentChannelId = payload;
-      console.log(`state after ${state.currentChannelId}`);
     },
     removeChannel: (state, { payload }) => {
       if (state.currentChannelId === payload) {

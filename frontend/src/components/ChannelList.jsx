@@ -20,7 +20,6 @@ const ChannelList = () => {
   const [showRenameModal, setShowRenameModal] = useState(false);
 
   const changeChannel = (channelId) => {
-    console.log(`changeChannel Work ${channelId}`);
     dispatch(channelActions.changeChannel(channelId));
   };
 
