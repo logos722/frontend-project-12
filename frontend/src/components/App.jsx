@@ -4,7 +4,7 @@ import {
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Navbar from './Navbar.jsx';
-import Home from './Home.jsx';
+import Checker from './Checker.jsx';
 import Login from './Login.jsx';
 import NF from './NotFound.jsx';
 import Registration from './Registration.jsx';
@@ -28,7 +28,7 @@ const App = () => (
       <div className="d-flex flex-column h-100">
         <Navbar />
         <Routes>
-          <Route exact path="/" element={(<PrivateRoute><Home /></PrivateRoute>)} />
+          <Route exact path="/" element={(<PrivateRoute><Checker /></PrivateRoute>)} />
           <Route path="/login" element={<AuthRoute><Login /></AuthRoute>} />
           <Route path="/signup" element={<AuthRoute><Registration /></AuthRoute>} />
           <Route path="*" element={<NF />} />

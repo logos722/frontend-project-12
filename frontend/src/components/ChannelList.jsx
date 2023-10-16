@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import ModalAdd from './ModalAdd.jsx';
 import ModalRemove from './ModalRemove.jsx';
 import ModalRename from './ModalRename.jsx';
-import { subscribeToNewChannel, subscribeToRemoveChannel, subscribeToRenameChannel } from '../helpers/socket.js';
 
 import { selectors as ChannelSelectors, actions as channelActions } from '../slices/channelsSlice.js';
 
@@ -20,24 +19,8 @@ const ChannelList = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showRenameModal, setShowRenameModal] = useState(false);
 
-  useEffect(() => {
-    const unsubscribe = subscribeToNewChannel(dispatch, channelActions.addchannel);
-    const unsubRenameChannel = subscribeToRenameChannel(dispatch, channelActions.renameChannel);
-    const unsubRemoveChannel = subscribeToRemoveChannel(dispatch, channelActions.removeChannel);
-
-    return () => {
-      unsubscribe();
-      unsubRenameChannel();
-      unsubRemoveChannel(); // Очищаем подписку при размонтировании компонента
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const isCurrent = (id) => id === currentChannelId;
-  function variant(id) { return isCurrent(id) ? 'secondary' : null; }
-
   const changeChannel = (channelId) => {
-    console.log(channelId);
+    console.log(`changeChannel Work ${channelId}`);
     dispatch(channelActions.changeChannel(channelId));
   };
 
@@ -66,6 +49,7 @@ const ChannelList = () => {
           <span className="visually-hidden">+</span>
         </Button>
         <ModalAdd
+          channels={channels.map((channel) => channel.name)}
           show={showModal}
           handleClose={() => handleCloseModal(setShowAddModal)}
           changeChannel={changeChannel}
@@ -73,23 +57,24 @@ const ChannelList = () => {
       </div>
       <ul
         id="channels-box"
-        className="nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block"
+        className="nav flex-column nav-pills nav-fill px-2 mb-3 h-100 d-block"
       >
         {channels.map((channel) => (
           <li key={channel.id} className="nav-item w-100">
             {channel.removable ? (
-              <Dropdown className="d-flex" as={ButtonGroup}>
-                <Button variant={variant(channel.id)} className="w-100 rounded-0 text-start text-truncate btn" type="submit" onClick={() => changeChannel(channel.id)}>
+              <Dropdown className="d-flex w-90" as={ButtonGroup}>
+                <Button active={currentChannelId === channel.id} variant="light" className="w-100 rounded-0 text-start text-truncate btn" type="submit" onClick={() => changeChannel(channel.id)}>
                   <span className="me-1">#</span>
                   {channel.name}
                 </Button>
-                <Dropdown.Toggle className="flex-grow-0" split variant={variant(channel.id)} id="dropdown-split-basic">
+                <Dropdown.Toggle className="flex-grow-0" split variant="light" id="dropdown-split-basic">
                   <span className="visually-hidden">{t('channels.menu')}</span>
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                   <Dropdown.Item>
-                    <Button variant={variant(channel.id)} type="submit" onClick={() => handleOpenModal(setShowRenameModal)}>{t('modals.rename')}</Button>
+                    <Button variant="light" type="submit" onClick={() => handleOpenModal(setShowRenameModal)}>{t('modals.rename')}</Button>
                     <ModalRename
+                      channels={channels}
                       show={showRenameModal}
                       handleClose={() => handleCloseModal(setShowRenameModal)}
                       channelId={channel.id}
@@ -97,7 +82,7 @@ const ChannelList = () => {
                     />
                   </Dropdown.Item>
                   <Dropdown.Item>
-                    <Button variant={variant(channel.id)} type="submit" onClick={() => handleOpenModal(setShowDeleteModal)}>{t('modals.remove')}</Button>
+                    <Button variant="light" type="submit" onClick={() => handleOpenModal(setShowDeleteModal)}>{t('modals.remove')}</Button>
                     <ModalRemove
                       show={showDeleteModal}
                       handleClose={() => handleCloseModal(setShowDeleteModal)}
@@ -109,7 +94,8 @@ const ChannelList = () => {
             ) : (
               <Button
                 type="button"
-                variant={variant(channel.id)}
+                active={currentChannelId === channel.id}
+                variant="light"
                 key={channel.id}
                 className="w-100 rounded-0 text-start"
                 onClick={() => changeChannel(channel.id)}

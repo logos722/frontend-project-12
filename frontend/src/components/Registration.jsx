@@ -5,11 +5,13 @@ import * as Yup from 'yup';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 import Button from 'react-bootstrap/Button';
+import { useRollbar } from '@rollbar/react';
 import { useTranslation } from 'react-i18next';
 import { useAuthContext } from '../context/index.js';
 import avatar from '../assets/image/avatar_1.6084447160acc893a24d.jpg';
 
 const Registration = () => {
+  const rollbar = useRollbar();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [registrationFailed, setRegistrationFailed] = useState(false);
@@ -43,18 +45,17 @@ const Registration = () => {
       setRegistrationFailed(false);
 
       try {
-        const res = await axios.post(
+        const { data } = await axios.post(
           '/api/v1/signup',
           { username: values.username, password: values.password },
         );
-        const { token, username } = res.data;
-        const data
+        const user = { token: data.token, username: data.username };
+        localStorage.setItem('user', JSON.stringify(user));
         useAuth.setUserData(data);
-        localStorage.setItem('token', token);
-        localStorage.setItem('username', username);
-        navigate('/', { replace: false });
+
+        navigate('/');
       } catch (err) {
-        // rollbar.error(err);
+        rollbar.error('Sign up', err);
         if (!err.isAxiosError) {
           throw err;
         }

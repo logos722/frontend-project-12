@@ -2,14 +2,15 @@ import React from 'react';
 import { Button, Navbar as BootstrapNavbar } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuthContext } from '../context/index.js';
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const user = localStorage.getItem('token');
+  const useAuth = useAuthContext();
 
   const logOut = () => {
     localStorage.clear();
-
+    useAuth.setUserData(null);
     navigate('/login');
   };
 
@@ -18,7 +19,7 @@ const Navbar = () => {
     <BootstrapNavbar bg="white" expand="lg" className="shadow-sm">
       <div className="container">
         <BootstrapNavbar.Brand as={Link} to="/">{t('hexletChat')}</BootstrapNavbar.Brand>
-        {!!user && <Button onClick={logOut}>{t('logout')}</Button>}
+        {!!useAuth.data && <Button onClick={logOut}>{t('logout')}</Button>}
       </div>
     </BootstrapNavbar>
   );

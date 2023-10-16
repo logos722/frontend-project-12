@@ -8,16 +8,21 @@ import axios from 'axios';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import { useTranslation } from 'react-i18next';
+import { useRollbar } from '@rollbar/react';
+import { useAuthContext } from '../context/index.js';
 import avatar from '../assets/image/avatar.jpg';
 
 const Login = () => {
+  const rollbar = useRollbar();
   const inputRef = useRef();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const useAuth = useAuthContext();
 
   useEffect(() => {
     inputRef.current.focus();
   }, []);
+
   const formik = useFormik({
     initialValues: {
       username: '',
@@ -28,32 +33,29 @@ const Login = () => {
       try {
         const formDate = JSON.stringify(values, null, 2);
         console.log(formDate);
-        const serverData = await axios.post('/api/v1/login', { username: values.username, password: values.password });
-        const { token, username } = serverData.data;
-        localStorage.setItem('token', token);
-        localStorage.setItem('username', username);
-        console.log(serverData);
+        const { data } = await axios.post('/api/v1/login', { username: values.username, password: values.password });
+        const user = { token: data.token, username: data.username };
+        localStorage.setItem('user', JSON.stringify(user));
+        useAuth.setUserData(data);
         navigate('/');
       } catch (err) {
-        // rollbar.error(err);
+        rollbar.error('Login error', err);
         console.error(err);
+        if (err.code === 'ERR_NETWORK') {
+          toast.error(t('errors.network'));
+        }
+
         if (!err.isAxiosError) {
           toast.error(t('errors.unknown'), {
             position: 'top-right',
             autoClose: 3000,
           });
-          return;
         }
 
         if (err.response?.status === 401) {
           // сообщение об ошибке авторизации показываем в форме, а не в тосте
           formik.setStatus({ auth: t('login.authFailed') });
           inputRef.current.select();
-        } else {
-          toast.error(t('errors.network'), {
-            position: 'top-right',
-            autoClose: 3000,
-          });
         }
       }
     },

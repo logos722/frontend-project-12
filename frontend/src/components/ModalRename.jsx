@@ -3,15 +3,19 @@ import React, { useState, useEffect, useRef } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import Alert from 'react-bootstrap/Alert';
 import profanity from 'leo-profanity';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
-import { sendRenameChannel } from '../helpers/socket.js';
+import isExistsChannelName from '../helpers/isChannelExists.js';
+import { useSocketContext } from '../context/index.js';
 
-const ModalRename = ({ show, handleClose, channelId, changeChannel }) => {
+const ModalRename = ({ channels, show, handleClose, channelId, changeChannel }) => {
   const inputRef = useRef(null); // Создаем ref для элемента input
   const { t } = useTranslation();
+  const { renameChannelName } = useSocketContext();
   const [channelName, setChannelName] = useState(''); // Локальное состояние для имени канала
+  const [showAlert, setShowAlert] = useState(false); // Локальное состояние для имени канала
   const showConfirmNotification = () => {
     toast.success(t('channels.renamed'));
   };
@@ -25,23 +29,30 @@ const ModalRename = ({ show, handleClose, channelId, changeChannel }) => {
     return () => clearTimeout(timeoutId);
   }, [show]);
 
-  const handleRename = () => {
+  const resolve = (id) => {
     showConfirmNotification();
+    setChannelName('');
+    console.log(`Work resolve ${id}`);
+    changeChannel(id);
+    handleClose();
+  };
+
+  const handleRename = async () => {
     console.log(channelId);
     const filteredName = profanity.clean(channelName).trim();
-    const newNameForChannel = { id: channelId, name: filteredName };
-    console.log(newNameForChannel);
-    sendRenameChannel(newNameForChannel, (acknowledgmentData) => {
-      console.log('Подтверждение от сервера:', acknowledgmentData);
-    });
-    setChannelName('');
-    handleClose();
-    changeChannel(channelId);
+    if (isExistsChannelName(channels, filteredName)) {
+      setShowAlert(true);
+    } else {
+      const newNameForChannel = { id: channelId, name: filteredName };
+      console.log(newNameForChannel);
+      await renameChannelName(newNameForChannel, resolve);
+    }
   };
 
   const handleKeyPress = (e) => {
     console.log('User pressed: ', e.key);
     if (e.key === 'Enter') {
+      e.preventDefault();
       handleRename();
     } else if (e.key === ' ') {
       e.preventDefault(); // Предотвращаем стандартное поведение пробела
@@ -78,6 +89,15 @@ const ModalRename = ({ show, handleClose, channelId, changeChannel }) => {
           </Form.Group>
         </Form>
       </Modal.Body>
+      <Modal.Footer>
+        {showAlert && (
+          <Alert className="w-100" variant="danger" onClose={() => setShowAlert(false)} dismissible>
+            <p>
+              {t('modals.uniq')}
+            </p>
+          </Alert>
+        )}
+      </Modal.Footer>
     </Modal>
   );
 };

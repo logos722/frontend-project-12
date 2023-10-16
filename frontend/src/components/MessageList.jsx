@@ -1,15 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { InputGroup, Form } from 'react-bootstrap';
 import profanity from 'leo-profanity';
 import { useTranslation } from 'react-i18next';
-import badWord from '../locales/badWord.js';
-import { sendMessage, subscribeToNewMessages } from '../helpers/socket.js';
+import { useSocketContext, useAuthContext } from '../context/index.js';
 
 import { selectors as ChannelSelectors } from '../slices/channelsSlice.js';
-import { selectors as MessageSelector, actions as messagesActions } from '../slices/messagesSlice.js';
-
-profanity.add(badWord);
+import { selectors as MessageSelector } from '../slices/messagesSlice.js';
 
 const MessageList = () => {
   const inputRef = useRef();
@@ -20,19 +17,12 @@ const MessageList = () => {
   const currentChannel = channels.find((channel) => channel.id === currentChannelId);
   const messages = useSelector(MessageSelector.selectAll);
   const currentChannelMessages = messages.filter(({ channelId }) => channelId === currentChannelId);
-  const dispatch = useDispatch();
+  const { addNewMessage } = useSocketContext();
+  const useAuth = useAuthContext();
 
   useEffect(() => {
     inputRef.current.focus();
   });
-
-  useEffect(() => {
-    const unsubscribe = subscribeToNewMessages(dispatch, messagesActions.addMessage);
-
-    return () => {
-      unsubscribe(); // Очищаем подписку при размонтировании компонента
-    };
-  }, [dispatch]);
 
   const handleSendMessage = (e) => {
     e.preventDefault();
@@ -41,16 +31,16 @@ const MessageList = () => {
       return; // Не отправляем пустые сообщения
     }
 
+    const resolve = () => {
+      setNewMessageText('');
+    };
+
     const filtered = profanity.clean(newMessageText);
-    const currentUser = localStorage.getItem('username');
+    const { username } = useAuth.data;
 
-    const msgData = { text: filtered, channelId: currentChannelId, username: currentUser };
+    const msgData = { text: filtered, channelId: currentChannelId, username };
 
-    sendMessage(msgData, (acknowledgmentData) => {
-      console.log('Подтверждение от сервера:', acknowledgmentData);
-      // После отправки сообщения можно обновить состояние или очистить поле ввода
-    });
-    setNewMessageText('');
+    addNewMessage(msgData, resolve);
   };
   console.log(currentChannelId);
   console.log(currentChannel);
@@ -62,7 +52,7 @@ const MessageList = () => {
             {currentChannel ? (currentChannel.name) : null}
           </b>
         </p>
-        <span className="text-muted">{`${messages.length} ${t('chat.messageCount', { count: messages.length })}`}</span>
+        <span className="text-muted">{`${currentChannelMessages.length} ${t('chat.messageCount', { count: currentChannelMessages.length })}`}</span>
       </div>
       <div id="messages-box" className="chat-messages overflow-auto px-5 ">
         {currentChannelMessages

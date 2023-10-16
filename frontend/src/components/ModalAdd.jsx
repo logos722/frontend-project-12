@@ -1,16 +1,20 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useFormik } from 'formik';
 import leoProfanity from 'leo-profanity';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import * as Yup from 'yup';
+
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
-import { sendChannel } from '../helpers/socket.js';
+import { useSocketContext } from '../context/index.js';
 
-const ModalAdd = ({ show, handleClose, changeChannel }) => {
+const ModalAdd = ({
+  channels, show, handleClose, changeChannel,
+}) => {
   const { t } = useTranslation();
-  const [newChannelID, setChannelID] = useState(null); // Локальное состояние для имени канала
+  const { addNewChannel } = useSocketContext();
   const showConfirmNotification = () => {
     toast.success(t('channels.created'));
   };
@@ -19,17 +23,24 @@ const ModalAdd = ({ show, handleClose, changeChannel }) => {
     initialValues: {
       name: '',
     },
-    onSubmit: ({ name }) => {
+    validationSchema: Yup.object({
+      name: Yup.string()
+        .required(t('modals.required'))
+        .notOneOf(channels, t('modals.uniq'))
+        .min(3, t('modals.min'))
+        .max(20, t('modals.max')),
+    }),
+
+    onSubmit: async ({ name }) => {
+      const resolve = (id) => {
+        formik.resetForm();
+        showConfirmNotification();
+        changeChannel(id);
+        handleClose();
+      };
       const filteredName = leoProfanity.clean(name);
       const newChannel = { name: filteredName };
-      sendChannel(newChannel, (acknowledgmentData) => {
-        console.log('Подтверждение от сервера:', acknowledgmentData);
-        setChannelID(acknowledgmentData.data.id);
-        // После отправки сообщения можно обновить состояние или очистить поле ввода
-      });
-      showConfirmNotification();
-      handleClose();
-      changeChannel(newChannelID);
+      addNewChannel(newChannel, resolve);
     },
   });
 
@@ -47,12 +58,12 @@ const ModalAdd = ({ show, handleClose, changeChannel }) => {
               autoFocus
               value={formik.values.name}
               onChange={formik.handleChange}
-              isInvalid={(formik.errors.name && formik.touched.name) || !!formik.status}
+              isInvalid={formik.errors.name && formik.touched.name}
               name="name"
               id="name"
             />
             <Form.Control.Feedback type="invalid">
-              {t(formik.errors.name) || t(formik.status)}
+              {formik.errors.name}
             </Form.Control.Feedback>
             <div className="d-flex justify-content-end">
               <Button
