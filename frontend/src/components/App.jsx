@@ -8,6 +8,7 @@ import Checker from './Checker.jsx';
 import Login from './Login.jsx';
 import NF from './NotFound.jsx';
 import Registration from './Registration.jsx';
+import ModalWindow from './modal/ModalWindow.jsx';
 import MainProvider from '../context/MainProvider.jsx';
 import { useAuthContext } from '../context/index.js';
 import '../assets/application.scss';
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/signup" element={<AuthRoute><Registration /></AuthRoute>} />
           <Route path="*" element={<NF />} />
         </Routes>
+        <ModalWindow />
       </div>
       <ToastContainer />
     </BrowserRouter>

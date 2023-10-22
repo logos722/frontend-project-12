@@ -5,24 +5,32 @@ import profanity from 'leo-profanity';
 import { useTranslation } from 'react-i18next';
 import { useSocketContext, useAuthContext } from '../context/index.js';
 
-import { selectors as ChannelSelectors } from '../slices/channelsSlice.js';
-import { selectors as MessageSelector } from '../slices/messagesSlice.js';
+import { getMessagesForCurrentChannel } from '../selectors/messagesSelectors.js';
+
+import { getCurrentChannelId, selectAllChannels } from '../selectors/channelsSelectors.js';
 
 const MessageList = () => {
   const inputRef = useRef();
   const { t } = useTranslation();
   const [newMessageText, setNewMessageText] = useState('');
-  const currentChannelId = useSelector((state) => state.channels.currentChannelId);
-  const channels = useSelector(ChannelSelectors.selectAll);
+  const currentChannelId = useSelector(getCurrentChannelId);
+  const channels = useSelector(selectAllChannels);
   const currentChannel = channels.find((channel) => channel.id === currentChannelId);
-  const messages = useSelector(MessageSelector.selectAll);
-  const currentChannelMessages = messages.filter(({ channelId }) => channelId === currentChannelId);
+  const currentChannelMessages = useSelector(getMessagesForCurrentChannel);
   const { addNewMessage } = useSocketContext();
   const useAuth = useAuthContext();
+  const chatContainerRef = useRef(null);
 
   useEffect(() => {
     inputRef.current.focus();
   });
+
+  useEffect(() => {
+    chatContainerRef.current.scrollTo({
+      top: 10000,
+      behavior: 'smooth',
+    });
+  }, [currentChannelMessages]);
 
   const handleSendMessage = (e) => {
     e.preventDefault();
@@ -53,7 +61,7 @@ const MessageList = () => {
         </p>
         <span className="text-muted">{`${currentChannelMessages.length} ${t('chat.messageCount', { count: currentChannelMessages.length })}`}</span>
       </div>
-      <div id="messages-box" className="chat-messages overflow-auto px-5 ">
+      <div id="messages-box" className="chat-messages overflow-auto px-5 " ref={chatContainerRef}>
         {currentChannelMessages
           ? (
             <ul style={{ listStyle: 'none' }}>

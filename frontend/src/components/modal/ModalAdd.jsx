@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useFormik } from 'formik';
 import leoProfanity from 'leo-profanity';
 import Modal from 'react-bootstrap/Modal';
@@ -8,16 +9,27 @@ import * as Yup from 'yup';
 
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
-import { useSocketContext } from '../context/index.js';
+import { useSocketContext } from '../../context/index.js';
 
-const ModalAdd = ({
-  channels, show, handleClose, changeChannel,
-}) => {
+import { selectAllChannels } from '../../selectors/channelsSelectors.js';
+import { actions as channelActions } from '../../slices/channelsSlice.js';
+import { actions as modalActions } from '../../slices/modalSlice.js';
+
+const ModalAdd = () => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const channels = useSelector(selectAllChannels);
+  const channelsNames = channels.map((channel) => channel.name);
   const { addNewChannel } = useSocketContext();
   const showConfirmNotification = () => {
     toast.success(t('channels.created'));
   };
+
+  const inputRef = useRef();
+
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
 
   const formik = useFormik({
     initialValues: {
@@ -26,7 +38,7 @@ const ModalAdd = ({
     validationSchema: Yup.object({
       name: Yup.string()
         .required(t('modals.required'))
-        .notOneOf(channels, t('modals.uniq'))
+        .notOneOf(channelsNames, t('modals.uniq'))
         .min(3, t('modals.min'))
         .max(20, t('modals.max')),
     }),
@@ -35,8 +47,8 @@ const ModalAdd = ({
       const resolve = (id) => {
         formik.resetForm();
         showConfirmNotification();
-        changeChannel(id);
-        handleClose();
+        dispatch(channelActions.changeChannel(id));
+        dispatch(modalActions.closeModalWindow());
       };
       const filteredName = leoProfanity.clean(name);
       const newChannel = { name: filteredName };
@@ -45,7 +57,7 @@ const ModalAdd = ({
   });
 
   return (
-    <Modal show={show} onHide={handleClose}>
+    <Modal onHide={() => dispatch(modalActions.closeModalWindow())} show>
       <Modal.Header closeButton>
         <Modal.Title>{t('modals.add')}</Modal.Title>
       </Modal.Header>
@@ -59,6 +71,7 @@ const ModalAdd = ({
               value={formik.values.name}
               onChange={formik.handleChange}
               isInvalid={formik.errors.name && formik.touched.name}
+              ref={inputRef}
               name="name"
               id="name"
             />
@@ -70,7 +83,7 @@ const ModalAdd = ({
                 className="me-2"
                 variant="secondary"
                 type="button"
-                onClick={handleClose}
+                onClick={() => dispatch(modalActions.closeModalWindow())}
               >
                 {t('modals.cancel')}
               </Button>

@@ -82,7 +82,8 @@ const RunApp = async () => {
     });
 
   profanity.add(profanity.getDictionary('en'));
-  profanity.add(profanity.getDictionary('en'));
+  const russianDictionary = profanity.getDictionary('ru');
+  profanity.add(russianDictionary);
   profanity.add(badWord);
 
   const rollbarConfig = {

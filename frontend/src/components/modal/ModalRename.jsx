@@ -1,47 +1,51 @@
 /* eslint-disable object-curly-newline */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Modal from 'react-bootstrap/Modal';
+import { Alert } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import Alert from 'react-bootstrap/Alert';
-import profanity from 'leo-profanity';
+
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
-import isExistsChannelName from '../helpers/isChannelExists.js';
-import { useSocketContext } from '../context/index.js';
+import { useSocketContext } from '../../context/index.js';
 
-const ModalRename = ({ channels, show, handleClose, channelId, changeChannel }) => {
-  const inputRef = useRef(null); // Создаем ref для элемента input
-  const { t } = useTranslation();
-  const { renameChannelName } = useSocketContext();
+import { getModalItem } from '../../selectors/modalsSelectors.js';
+import { selectAllChannels } from '../../selectors/channelsSelectors.js';
+import { actions as channelActions } from '../../slices/channelsSlice.js';
+import { actions as modalActions } from '../../slices/modalSlice.js';
+
+const ModalRename = () => {
+  const dispatch = useDispatch();
+  const channels = useSelector(selectAllChannels);
+  const channelBeingEdited = useSelector(getModalItem);
   const [channelName, setChannelName] = useState(''); // Локальное состояние для имени канала
   const [showAlert, setShowAlert] = useState(false); // Локальное состояние для имени канала
+  const { t } = useTranslation();
+  const { renameChannelName } = useSocketContext();
+
   const showConfirmNotification = () => {
     toast.success(t('channels.renamed'));
   };
 
+  const inputRef = useRef(); // Создаем ref для элемента input
+
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (show && inputRef.current) {
-        inputRef.current.focus();
-      }
-    }, 0);
-    return () => clearTimeout(timeoutId);
-  }, [show]);
+    inputRef.current.focus();
+  }, []);
 
   const resolve = (id) => {
     showConfirmNotification();
     setChannelName('');
-    changeChannel(id);
-    handleClose();
+    dispatch(channelActions.changeChannel(id));
+    dispatch(modalActions.closeModalWindow());
   };
 
   const handleRename = async () => {
-    const filteredName = profanity.clean(channelName).trim();
-    if (isExistsChannelName(channels, filteredName)) {
+    if (channels.find((channel) => channel.name === channelName)) {
       setShowAlert(true);
     } else {
-      const newNameForChannel = { id: channelId, name: filteredName };
+      const newNameForChannel = { id: channelBeingEdited.id, name: channelName };
       await renameChannelName(newNameForChannel, resolve);
     }
   };
@@ -57,7 +61,7 @@ const ModalRename = ({ channels, show, handleClose, channelId, changeChannel }) 
   };
 
   return (
-    <Modal show={show} onHide={handleClose}>
+    <Modal onHide={() => dispatch(modalActions.closeModalWindow())} show>
       <Modal.Header closeButton>
         <Modal.Title>{t('modals.rename')}</Modal.Title>
       </Modal.Header>
@@ -75,7 +79,7 @@ const ModalRename = ({ channels, show, handleClose, channelId, changeChannel }) 
             />
             <label className="visually-hidden" htmlFor="name">{t('modals.channelName')}</label>
             <div className="d-flex justify-content-end">
-              <Button className="me-2" type="button" variant="secondary" onClick={handleClose}>
+              <Button className="me-2" type="button" variant="secondary" onClick={() => dispatch(modalActions.closeModalWindow())}>
                 {t('modals.cancel')}
               </Button>
               <Button variant="primary" onClick={handleRename}>
