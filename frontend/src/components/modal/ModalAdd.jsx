@@ -9,7 +9,7 @@ import * as Yup from 'yup';
 
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
-import { useSocketContext } from '../../context/index.js';
+import { useApi } from '../../hooks';
 
 import { selectAllChannels } from '../../selectors/channelsSelectors.js';
 import { actions as channelActions } from '../../slices/channelsSlice.js';
@@ -20,7 +20,7 @@ const ModalAdd = () => {
   const dispatch = useDispatch();
   const channels = useSelector(selectAllChannels);
   const channelsNames = channels.map((channel) => channel.name);
-  const { addNewChannel } = useSocketContext();
+  const { addNewChannel } = useApi();
   const showConfirmNotification = () => {
     toast.success(t('channels.created'));
   };

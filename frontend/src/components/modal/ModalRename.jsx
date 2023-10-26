@@ -8,7 +8,7 @@ import Form from 'react-bootstrap/Form';
 
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
-import { useSocketContext } from '../../context/index.js';
+import { useApi } from '../../hooks';
 
 import { getModalItem } from '../../selectors/modalsSelectors.js';
 import { selectAllChannels } from '../../selectors/channelsSelectors.js';
@@ -22,7 +22,7 @@ const ModalRename = () => {
   const [channelName, setChannelName] = useState(''); // Локальное состояние для имени канала
   const [showAlert, setShowAlert] = useState(false); // Локальное состояние для имени канала
   const { t } = useTranslation();
-  const { renameChannelName } = useSocketContext();
+  const { renameChannelName } = useApi();
 
   const showConfirmNotification = () => {
     toast.success(t('channels.renamed'));

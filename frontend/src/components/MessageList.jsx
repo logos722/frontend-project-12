@@ -3,22 +3,21 @@ import { useSelector } from 'react-redux';
 import { InputGroup, Form } from 'react-bootstrap';
 import profanity from 'leo-profanity';
 import { useTranslation } from 'react-i18next';
-import { useSocketContext, useAuthContext } from '../context/index.js';
+import { useAuth, useApi } from '../hooks/index.js';
 
 import { getMessagesForCurrentChannel } from '../selectors/messagesSelectors.js';
 
-import { getCurrentChannelId, selectAllChannels } from '../selectors/channelsSelectors.js';
+import { getCurrentChannelId, getCurrentChannel } from '../selectors/channelsSelectors.js';
 
 const MessageList = () => {
   const inputRef = useRef();
   const { t } = useTranslation();
   const [newMessageText, setNewMessageText] = useState('');
   const currentChannelId = useSelector(getCurrentChannelId);
-  const channels = useSelector(selectAllChannels);
-  const currentChannel = channels.find((channel) => channel.id === currentChannelId);
+  const currentChannel = useSelector(getCurrentChannel);
   const currentChannelMessages = useSelector(getMessagesForCurrentChannel);
-  const { addNewMessage } = useSocketContext();
-  const useAuth = useAuthContext();
+  const { getUserName } = useAuth();
+  const { addNewMessage } = useApi();
   const chatContainerRef = useRef(null);
 
   useEffect(() => {
@@ -44,7 +43,7 @@ const MessageList = () => {
     };
 
     const filtered = profanity.clean(newMessageText);
-    const { username } = useAuth.data;
+    const username = getUserName();
 
     const msgData = { text: filtered, channelId: currentChannelId, username };
 
