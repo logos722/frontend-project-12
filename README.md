@@ -27,6 +27,6 @@ Supported languages:
 
 ## Usage
 
-Go to frontend-project-12-production-a1e7.up.railway.app/signup
+Go to https://frontend-project-12-production-a1e7.up.railway.app/signup
 
 Signup, invite friends, start chatting, enjoy!
