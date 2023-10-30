@@ -48,14 +48,12 @@ const ChatSocketProvider = ({ children, socket }) => {
     });
   }, [socket]);
 
-  const socketContextValue = useMemo(() => {
-    return {
-      addNewMessage,
-      addNewChannel,
-      removeChannel,
-      renameChannelName,
-    };
-  }, [addNewMessage, addNewChannel, removeChannel, renameChannelName]);
+  const socketContextValue = useMemo(() => ({
+    addNewMessage,
+    addNewChannel,
+    removeChannel,
+    renameChannelName,
+  }), [addNewMessage, addNewChannel, removeChannel, renameChannelName]);
 
   return (
     <SocketContext.Provider
