@@ -31,6 +31,7 @@ const ModalRename = () => {
   const inputRef = useRef(); // Создаем ref для элемента input
 
   useEffect(() => {
+    setChannelName(channelBeingEdited.name);
     inputRef.current.focus();
   }, []);
 
