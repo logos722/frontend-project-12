@@ -4,33 +4,31 @@ import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useAuthContext } from '../context/index.js';
+import { useAuth } from '../hooks';
 import { actions as channelsActions } from '../slices/channelsSlice.js';
 import { actions as messagesActions } from '../slices/messagesSlice.js';
+import routes from '../routes.js';
 import Home from './Home.jsx';
 import SpinnerComponent from './Spinner.jsx';
 
 const Checker = () => {
   const { t } = useTranslation();
+
   const navigate = useNavigate();
-  const { data } = useAuthContext();
-  const useAuth = useAuthContext();
+  const { getAuthHeader, logOut } = useAuth();
   const dispatch = useDispatch();
   const [load, setLoad] = useState(false);
 
   const disconnect = useCallback(() => {
-    localStorage.clear();
-    useAuth.setUserData(null);
-    navigate('/signup');
-  }, [useAuth, navigate]);
+    logOut();
+    navigate(routes.registrationPagePath());
+  }, [logOut, navigate]);
 
-  async function fetchData(token) {
+  async function fetchData(header) {
     try {
       setLoad(false);
-      const allData = await axios.get('/api/v1/data', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const allData = await axios.get(routes.dataPath(), {
+        headers: header,
       }).then((response) => (response.data));
       const channelsData = allData.channels;
       const messagesData = allData.messages;
@@ -51,8 +49,8 @@ const Checker = () => {
   }
 
   useEffect(() => {
-    const { token } = data;
-    fetchData(token);
+    const header = getAuthHeader();
+    fetchData(header);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

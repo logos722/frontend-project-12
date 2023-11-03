@@ -5,7 +5,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
-import { useSocketContext } from '../../context/index.js';
+import { useApi } from '../../hooks';
 
 import { actions as modalActions } from '../../slices/modalSlice.js';
 import { getModalItem } from '../../selectors/modalsSelectors.js';
@@ -14,7 +14,7 @@ const ModalRemove = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const [isDisabled, setDisabled] = useState(false);
-  const { removeChannel } = useSocketContext();
+  const { removeChannel } = useApi();
   const channelBeingEdited = useSelector(getModalItem);
   const showConfirmNotification = () => {
     toast.success(t('channels.removed'));

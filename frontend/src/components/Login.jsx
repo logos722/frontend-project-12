@@ -9,7 +9,8 @@ import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import { useTranslation } from 'react-i18next';
 import { useRollbar } from '@rollbar/react';
-import { useAuthContext } from '../context/index.js';
+import { useAuth } from '../hooks';
+import routes from '../routes.js';
 import avatar from '../assets/image/avatar.jpg';
 
 const Login = () => {
@@ -17,7 +18,7 @@ const Login = () => {
   const inputRef = useRef();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const useAuth = useAuthContext();
+  const { logIn } = useAuth();
 
   useEffect(() => {
     inputRef.current.focus();
@@ -30,11 +31,12 @@ const Login = () => {
     },
     onSubmit: async (values) => {
       try {
-        const { data } = await axios.post('/api/v1/login', { username: values.username, password: values.password });
-        const user = { token: data.token, username: data.username };
-        localStorage.setItem('user', JSON.stringify(user));
-        useAuth.setUserData(data);
-        navigate('/');
+        const { data } = await axios.post(
+          routes.loginPath(),
+          { username: values.username, password: values.password },
+        );
+        logIn(data);
+        navigate(routes.chatPagePath());
       } catch (err) {
         rollbar.error('Login error', err);
         if (err.code === 'ERR_NETWORK') {

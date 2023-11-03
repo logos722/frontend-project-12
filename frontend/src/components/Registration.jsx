@@ -7,7 +7,8 @@ import axios from 'axios';
 import Button from 'react-bootstrap/Button';
 import { useRollbar } from '@rollbar/react';
 import { useTranslation } from 'react-i18next';
-import { useAuthContext } from '../context/index.js';
+import { useAuth } from '../hooks';
+import routes from '../routes.js';
 import avatar from '../assets/image/avatar_1.6084447160acc893a24d.jpg';
 
 const Registration = () => {
@@ -16,7 +17,7 @@ const Registration = () => {
   const navigate = useNavigate();
   const [registrationFailed, setRegistrationFailed] = useState(false);
   const inputRef = useRef();
-  const useAuth = useAuthContext();
+  const { logIn } = useAuth();
 
   const RegisterSchema = Yup.object().shape({
     username: Yup
@@ -46,14 +47,11 @@ const Registration = () => {
 
       try {
         const { data } = await axios.post(
-          '/api/v1/signup',
+          routes.registrationPath(),
           { username: values.username, password: values.password },
         );
-        const user = { token: data.token, username: data.username };
-        localStorage.setItem('user', JSON.stringify(user));
-        useAuth.setUserData(data);
-
-        navigate('/');
+        logIn(data);
+        navigate(routes.chatPagePath());
       } catch (err) {
         rollbar.error('Sign up', err);
         if (!err.isAxiosError) {

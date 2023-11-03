@@ -1,7 +1,5 @@
-import { createContext, useContext } from 'react';
+import { createContext } from 'react';
 
-const Context = createContext({});
-export const SocketContext = createContext(null);
-export const useAuthContext = () => useContext(Context);
-export const useSocketContext = () => useContext(SocketContext);
-export default Context;
+export const AuthContext = createContext({});
+
+export const SocketContext = createContext({});

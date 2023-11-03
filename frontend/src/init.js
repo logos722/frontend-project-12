@@ -7,7 +7,6 @@ import profanity from 'leo-profanity';
 
 import { Provider } from 'react-redux';
 import { Provider as RollbarProvider, ErrorBoundary } from '@rollbar/react';
-import { SocketContext } from './context/index.js';
 import { actions as channelActions } from './slices/channelsSlice.js';
 import { actions as messagesActions } from './slices/messagesSlice.js';
 import store from './slices/store.js';
@@ -36,38 +35,6 @@ const RunApp = async () => {
   socket.on('newChannel', (payload) => {
     store.dispatch(channelActions.addchannel(payload));
   });
-
-  const addNewMessage = (props, resolve) => {
-    socket.emit('newMessage', props, ({ status }) => {
-      if (status) {
-        resolve();
-      }
-    });
-  };
-
-  const addNewChannel = (props, resolve) => {
-    socket.emit('newChannel', props, ({ status, data }) => {
-      if (status) {
-        resolve(data.id);
-      }
-    });
-  };
-
-  const removeChannel = (props, resolve) => {
-    socket.emit('removeChannel', props, ({ status }) => {
-      if (status) {
-        resolve();
-      }
-    });
-  };
-
-  const renameChannelName = (props, resolve) => {
-    socket.emit('renameChannel', props, ({ status }) => {
-      if (status) {
-        resolve(props.id);
-      }
-    });
-  };
 
   const i18n = i18next.createInstance();
 
@@ -101,16 +68,7 @@ const RunApp = async () => {
         <RollbarProvider config={rollbarConfig}>
           <ErrorBoundary>
             <I18nextProvider i18n={i18n}>
-              <SocketContext.Provider
-                value={{
-                  addNewMessage,
-                  addNewChannel,
-                  removeChannel,
-                  renameChannelName,
-                }}
-              >
-                <App />
-              </SocketContext.Provider>
+              <App socket={socket} />
             </I18nextProvider>
           </ErrorBoundary>
         </RollbarProvider>

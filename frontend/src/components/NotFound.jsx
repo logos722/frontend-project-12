@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
-const NF = () => {
+const NotFound = () => {
   const { t } = useTranslation();
   return (
     <>
@@ -10,4 +10,4 @@ const NF = () => {
   );
 };
 
-export default NF;
+export default NotFound;
