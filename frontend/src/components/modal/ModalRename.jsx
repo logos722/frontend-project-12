@@ -33,6 +33,7 @@ const ModalRename = () => {
   useEffect(() => {
     setChannelName(channelBeingEdited.name);
     inputRef.current.focus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const resolve = (id) => {
