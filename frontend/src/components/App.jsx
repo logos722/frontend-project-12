@@ -1,4 +1,6 @@
-import { useMemo, useCallback, useState } from 'react';
+import {
+  useMemo, useCallback, useState, useEffect,
+} from 'react';
 import {
   BrowserRouter, Navigate, Routes, Route,
 } from 'react-router-dom';
@@ -98,6 +100,21 @@ const AuthProvider = ({ children }) => {
     }),
     [getUserName, logIn, logOut, getAuthHeader, user],
   );
+
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      // обработка изменений в localstorage
+      if (event.newValue == null) {
+        window.location.href = routes.loginPagePath();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [logOut]);
 
   return (
     <AuthContext.Provider
